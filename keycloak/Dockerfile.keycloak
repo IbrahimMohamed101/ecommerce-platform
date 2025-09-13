@@ -26,4 +26,9 @@ ENV KC_METRICS_ENABLED=true
 EXPOSE 8080
 
 # Start Keycloak in production mode (بعد الـ build)
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", \
+    "--http-port=${PORT}", \
+    "--db=postgres", \
+    "--db-url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}", \
+    "--db-username=${DB_USER}", \
+    "--db-password=${DB_PASSWORD}"]
