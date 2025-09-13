@@ -1,0 +1,1116 @@
+{
+	"info": {
+		"_postman_id": "544933c4-b48f-4171-af9e-9d9c528e051e",
+		"name": "E-commerce Platform API",
+		"description": "Comprehensive API collection for the E-commerce Platform. Includes endpoints for user authentication, vendor management, admin operations, and system monitoring. Use variables for base URL and authentication tokens.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40391553",
+		"_collection_link": "https://www.postman.com/ecommerce-backend-team/workspace/my-workspace/collection/40391553-544933c4-b48f-4171-af9e-9d9c528e051e?action=share&source=collection_link&creator=40391553",
+		"version": "1.0.0"
+	},
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "TOKEN",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "Endpoints for user registration, login, token management, and profile operations",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-csrf-token",
+								"value": "{{CSRF_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"example_user\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"SecurePass123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user account with required details"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Authenticate user and receive access/refresh tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Access Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"your_refresh_token_here\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/refresh",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh expired access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"your_refresh_token_here\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/logout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout user and invalidate tokens"
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Verification Email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/auth/resend-verification-email",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"resend-verification-email"
+							]
+						},
+						"description": "Resend email verification link to user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/auth/profile",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"profile"
+							]
+						},
+						"description": "Retrieve current authenticated user's profile information"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vendor Management",
+			"description": "Endpoints for vendor registration, profile management, and vendor-specific operations",
+			"item": [
+				{
+					"name": "Request Vendor Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"businessName\": \"Example Business\",\n  \"businessDescription\": \"Business description\",\n  \"businessAddress\": \"123 Business St, City, Country\",\n  \"businessPhone\": \"+1234567890\",\n  \"businessEmail\": \"business@example.com\",\n  \"businessLicense\": \"LIC-123456\",\n  \"taxNumber\": \"TAX-987654\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/vendors/request",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"vendors",
+								"request"
+							]
+						},
+						"description": "Submit vendor account registration request"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vendor Request Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/vendors/request/status",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"vendors",
+								"request",
+								"status"
+							]
+						},
+						"description": "Check status of vendor registration request"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Public Vendors List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/vendors/public",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"vendors",
+								"public"
+							]
+						},
+						"description": "Retrieve list of approved public vendors"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vendor Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/vendors/profile",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"vendors",
+								"profile"
+							]
+						},
+						"description": "Retrieve authenticated vendor's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Vendor Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"businessName\": \"Updated Business Name\",\n  \"businessDescription\": \"Updated description\",\n  \"businessAddress\": \"Updated address\",\n  \"businessPhone\": \"+1234567890\",\n  \"businessEmail\": \"updated@example.com\",\n  \"businessLicense\": \"LIC-123456\",\n  \"taxNumber\": \"TAX-987654\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/vendors/profile",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"vendors",
+								"profile"
+							]
+						},
+						"description": "Update vendor profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Vendor Statistics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/vendors/stats",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"vendors",
+								"stats"
+							]
+						},
+						"description": "Retrieve vendor-specific statistics and metrics"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Operations",
+			"description": "Endpoints for user profile management and personal operations",
+			"item": [
+				{
+					"name": "Get Current User Info",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/users/me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Retrieve current user's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"new_username\",\n  \"firstName\": \"Updated First Name\",\n  \"lastName\": \"Updated Last Name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/users/me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Update current user's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/users/me",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"me"
+							]
+						},
+						"description": "Delete current user's account (requires confirmation)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Operations",
+			"description": "Administrator endpoints for managing users, vendors, and system monitoring",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/admin/users",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"users"
+							]
+						},
+						"description": "Retrieve list of all users (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pending Vendors",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/admin/vendors/pending",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"vendors",
+								"pending"
+							]
+						},
+						"description": "Retrieve list of pending vendor registration requests"
+					},
+					"response": []
+				},
+				{
+					"name": "Approve/Reject Vendor",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"approved\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/admin/vendors/{{VENDOR_ID}}/approve",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"vendors",
+								"{{VENDOR_ID}}",
+								"approve"
+							]
+						},
+						"description": "Approve or reject vendor registration request"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/admin/users/{{USER_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"users",
+								"{{USER_ID}}"
+							]
+						},
+						"description": "Delete a user account (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Statistics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/admin/stats",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"stats"
+							]
+						},
+						"description": "Retrieve system-wide statistics and metrics"
+					},
+					"response": []
+				},
+				{
+					"name": "Get System Health Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/admin/monitoring/health",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"monitoring",
+								"health"
+							]
+						},
+						"description": "Check system health and service status"
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Monitoring Report",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/admin/monitoring/report",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"monitoring",
+								"report"
+							]
+						},
+						"description": "Generate comprehensive system monitoring report"
+					},
+					"response": []
+				},
+				{
+					"name": "Query Audit Logs",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/admin/audit/logs",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"audit",
+								"logs"
+							]
+						},
+						"description": "Query system audit logs for security monitoring"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Super Admin Operations",
+			"description": "Super administrator endpoints for advanced system management and user administration",
+			"item": [
+				{
+					"name": "Create Admin User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-csrf-token",
+								"value": "{{CSRF_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"SecureAdminPass123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/super-admin/admins",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"super-admin",
+								"admins"
+							]
+						},
+						"description": "Create a new administrator account"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Admins",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-csrf-token",
+								"value": "{{CSRF_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/super-admin/admins",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"super-admin",
+								"admins"
+							]
+						},
+						"description": "Retrieve list of all administrator accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-csrf-token",
+								"value": "{{CSRF_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/api/super-admin/admins/{{ADMIN_ID}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"super-admin",
+								"admins",
+								"{{ADMIN_ID}}"
+							]
+						},
+						"description": "Delete an administrator account"
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Admin Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"inactive\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/super-admin/admins/{{ADMIN_ID}}/status",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"super-admin",
+								"admins",
+								"{{ADMIN_ID}}",
+								"status"
+							]
+						},
+						"description": "Activate or deactivate an administrator account"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Admin Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"newPassword\": \"NewSecurePass123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/api/super-admin/admins/{{ADMIN_ID}}/reset-password",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"super-admin",
+								"admins",
+								"{{ADMIN_ID}}",
+								"reset-password"
+							]
+						},
+						"description": "Reset password for an administrator account"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Advanced Statistics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/super-admin/advanced-stats",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"super-admin",
+								"advanced-stats"
+							]
+						},
+						"description": "Retrieve advanced system statistics and analytics"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Audit Log",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api/super-admin/audit-log",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api",
+								"super-admin",
+								"audit-log"
+							]
+						},
+						"description": "Retrieve comprehensive system audit logs"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "System Health",
+			"description": "System monitoring and health check endpoints",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/health",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check overall system health and availability"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API Documentation",
+			"description": "Swagger/OpenAPI documentation and specification endpoints",
+			"item": [
+				{
+					"name": "Swagger UI",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api-docs",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api-docs"
+							]
+						},
+						"description": "Access interactive Swagger UI documentation for all API endpoints"
+					},
+					"response": []
+				},
+				{
+					"name": "OpenAPI Specification (JSON)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/api-docs.json",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"api-docs.json"
+							]
+						},
+						"description": "Get the complete OpenAPI 3.0 specification in JSON format"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

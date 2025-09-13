@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Keycloak
+  keycloak-db:
+    image: postgres:15
+    container_name: keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak123
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    networks:
+      - keycloak-network
+    restart: unless-stopped
+
+  # Keycloak Server
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0
+    container_name: keycloak-server
+    environment:
+      # Database configuration
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      POSTGRES_PASSWORD: keycloak123
+
+      # Keycloak Admin User
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      # Email settings from .env (اختياري)
+      KC_EMAIL_ENABLED: ${EMAIL_ENABLED}
+      KC_EMAIL_HOST: ${SMTP_HOST}
+      KC_EMAIL_PORT: ${SMTP_PORT}
+      KC_EMAIL_FROM: ${EMAIL_FROM}
+      KC_EMAIL_FROM_DISPLAY_NAME: ${EMAIL_FROM_NAME}
+      KC_EMAIL_REPLY_TO: ${ADMIN_EMAIL}
+      KC_EMAIL_AUTH_USERNAME: ${SMTP_USER}
+      KC_EMAIL_AUTH_PASSWORD: ${SMTP_PASSWORD}
+      KC_EMAIL_SSL: ${SMTP_SECURE}
+      KC_EMAIL_STARTTLS: ${SMTP_REQUIRE_TLS}
+
+      # Hostname & Dev mode settings
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak-db
+    networks:
+      - keycloak-network
+    restart: unless-stopped
+    command: start-dev
+
+  # Ecommerce App
+  app:
+    build: .
+    container_name: ecommerce-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - keycloak
+    networks:
+      - keycloak-network
+    restart: unless-stopped
+    command: npm run dev
+
+volumes:
+  keycloak_db_data:
+
+networks:
+  keycloak-network:
+    driver: bridge
