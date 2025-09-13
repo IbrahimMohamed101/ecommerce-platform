@@ -26,5 +26,8 @@ ENV KC_METRICS_ENABLED=true
 # Expose the port
 EXPOSE 8080
 
-# Start Keycloak in production mode
+# Build Keycloak server first (necessary for first startup)
+RUN /opt/keycloak/bin/kc.sh build
+
+# Start Keycloak in production mode with optimized flag (after build)
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--optimized"]
