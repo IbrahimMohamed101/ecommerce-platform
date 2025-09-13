@@ -180,11 +180,10 @@ const vendorProfileSchema = new mongoose.Schema({
 });
 
 // Indexes for better performance
-vendorRequestSchema.index({ userId: 1 });
+// Note: userId indexes are automatically created by unique: true
 vendorRequestSchema.index({ status: 1 });
 vendorRequestSchema.index({ requestedAt: -1 });
 
-vendorProfileSchema.index({ userId: 1 });
 vendorProfileSchema.index({ status: 1 });
 vendorProfileSchema.index({ 'rating.average': -1 });
 vendorProfileSchema.index({ categories: 1 });
