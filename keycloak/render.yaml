@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: keycloak-admin
+    runtime: docker
+    dockerfilePath: keycloak/Dockerfile.keycloak
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: KC_HTTP_PORT
+        value: 8080
+      - key: KC_BOOTSTRAP_ADMIN_USERNAME
+        value: admin
+      - key: KC_BOOTSTRAP_ADMIN_PASSWORD
+        value: admin
+      - key: KC_LOG_LEVEL
+        value: INFO
+    healthCheckPath: /health/ready
+    disk:
+      name: keycloak-data
+      mountPath: /opt/keycloak/data
+      sizeGB: 1

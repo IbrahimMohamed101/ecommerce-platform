@@ -1,20 +1,23 @@
-# Dockerfile لـ Keycloak 23+ على Render
-FROM quay.io/keycloak/keycloak:latest
+# Keycloak 26+ lightweight for Render Free
+FROM quay.io/keycloak/keycloak:26.3.4
 
-# ===== إعدادات الـ Admin =====
+# ===== إعدادات Admin =====
 ENV KC_BOOTSTRAP_ADMIN_USERNAME=admin
 ENV KC_BOOTSTRAP_ADMIN_PASSWORD=admin
 
-# ===== إعدادات Render =====
+# ===== تشغيل HTTP فقط =====
 ENV KC_HTTP_ENABLED=true
 ENV KC_HTTP_PORT=8080
-ENV KC_HOSTNAME_STRICT=false
-ENV KC_ADMIN_ENABLED=true
+ENV KC_PROXY_HEADERS=xforwarded
+
+# ===== إعدادات Production بسيطة =====
+ENV KC_LOG_LEVEL=INFO
 ENV KC_CACHE=local
-ENV KC_LOG_LEVEL=DEBUG
+ENV KC_ADMIN_ENABLED=true
+ENV KC_HEALTH_ENABLED=true
 
 # ===== فتح البورت =====
 EXPOSE 8080
 
-# ===== بدء Keycloak في الوضع الإنتاجي =====
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--cache=local"]
+# ===== بدء Keycloak بسرعة بدون Quarkus augmentation الثقيلة =====
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--optimized", "--hostname-strict=false", "--cache=local"]
