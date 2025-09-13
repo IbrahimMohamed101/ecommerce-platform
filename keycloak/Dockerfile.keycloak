@@ -1,10 +1,9 @@
 # Dockerfile for Keycloak 23+ on Render
 FROM quay.io/keycloak/keycloak:latest
 
-# Set environment variables for Keycloak configuration
-# Database configuration (use Render's PostgreSQL instance)
+# Database configuration
 ENV KC_DB=postgres
-ENV KC_DB_URL=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+ENV KC_DB_URL=${KC_DB_URL}
 ENV KC_DB_USERNAME=${DB_USER}
 ENV KC_DB_PASSWORD=${DB_PASSWORD}
 
@@ -26,8 +25,5 @@ ENV KC_METRICS_ENABLED=true
 # Expose the port
 EXPOSE 8080
 
-# Build Keycloak server first (necessary for first startup)
-RUN /opt/keycloak/bin/kc.sh build
-
-# Start Keycloak in production mode with optimized flag (after build)
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--optimized"]
+# Start Keycloak in production mode (بعد الـ build)
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
