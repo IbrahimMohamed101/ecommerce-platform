@@ -1,34 +1,18 @@
-# Dockerfile لـ Keycloak 23+ على Render
+# Dockerfile لـ Keycloak 26+ على Render
 FROM quay.io/keycloak/keycloak:latest
 
-# ===== إعدادات الـ DB =====
-ENV KC_DB=postgres
-ENV KC_DB_URL=jdbc:postgresql://dpg-d32g543ipnbc73d5js20-a:5432/keycloak_db_yuis
-ENV KC_DB_USERNAME=keycloak_db_yuis_user
-ENV KC_DB_PASSWORD=xuj0ZjSoBD8zwKJBFMbC1Cs6SiI6cZ6q
-
-# ===== إعدادات الـ Admin =====
+# ===== إعدادات Admin =====
 ENV KC_BOOTSTRAP_ADMIN_USERNAME=admin
-ENV KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+ENV KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
 
-# ===== إعدادات Render =====
+# ===== تشغيل HTTP وتفعيل admin console =====
 ENV KC_HTTP_ENABLED=true
-ENV KC_HTTP_PORT=8080
-ENV KC_PROXY_HEADERS=xforwarded
-
-# ===== إعدادات Production =====
-ENV KC_HEALTH_ENABLED=true
-ENV KC_METRICS_ENABLED=true
-
-# ===== إعدادات Single-Node (Keycloak 23+ format) =====
-ENV KC_CACHE=local
-ENV KC_LOG_LEVEL=INFO
-
-# ===== إعدادات Admin Console =====
 ENV KC_ADMIN_ENABLED=true
+ENV KC_CACHE=local
+ENV KC_LOG_LEVEL=DEBUG
 
 # ===== فتح البورت =====
 EXPOSE 8080
 
 # ===== بدء Keycloak في الوضع الإنتاجي =====
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--cache=local"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--cache=local", "--admin-enabled=true"]
