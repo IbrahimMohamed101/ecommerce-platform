@@ -19,7 +19,7 @@ const options = {
         description: 'Development server',
       },
       {
-        url: 'https://api.ecommerce-platform.com',
+        url: 'https://ecommerce-platform-vf9m.onrender.com',
         description: 'Production server',
       },
     ],
