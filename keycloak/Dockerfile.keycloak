@@ -13,9 +13,6 @@ ENV KC_BOOTSTRAP_ADMIN_PASSWORD=admin
 
 # ===== إعدادات Render و Hostname =====
 ENV KC_HOSTNAME=https://ecommerce-platform-1-s0v7.onrender.com
-ENV KC_HOSTNAME_ADMIN_URL=https://ecommerce-platform-1-s0v7.onrender.com
-ENV KC_HOSTNAME_STRICT=false
-ENV KC_HOSTNAME_STRICT_BACKCHANNEL=false
 ENV KC_HTTP_ENABLED=true
 ENV KC_HTTP_PORT=${PORT:-8080}
 ENV KC_PROXY_HEADERS=xforwarded
@@ -24,12 +21,15 @@ ENV KC_PROXY_HEADERS=xforwarded
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 
-# ===== إعدادات Single-Node (تعطيل Clustering) =====
-ENV KC_CACHE_STACK=local
-ENV KC_LOG_LEVEL=INFO,org.keycloak.cluster.infinispan:DEBUG,org.jgroups:DEBUG
+# ===== إعدادات Single-Node (Keycloak 23+ format) =====
+ENV KC_CACHE=local
+ENV KC_LOG_LEVEL=INFO
+
+# ===== إعدادات Admin Console =====
+ENV KC_ADMIN_ENABLED=true
 
 # ===== فتح البورت =====
 EXPOSE 8080
 
 # ===== بدء Keycloak في الوضع الإنتاجي =====
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--cache-stack=local"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--cache=local"]
