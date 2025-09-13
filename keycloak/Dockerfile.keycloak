@@ -24,8 +24,12 @@ ENV KC_PROXY_HEADERS=xforwarded
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 
+# ===== إعدادات Single-Node (تعطيل Clustering) =====
+ENV KC_CACHE_STACK=local
+ENV KC_LOG_LEVEL=INFO,org.keycloak.cluster.infinispan:DEBUG,org.jgroups:DEBUG
+
 # ===== فتح البورت =====
 EXPOSE 8080
 
 # ===== بدء Keycloak في الوضع الإنتاجي =====
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--cache-stack=local"]

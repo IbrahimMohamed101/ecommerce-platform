@@ -37,6 +37,10 @@ services:
       KC_HOSTNAME_STRICT: false
       KC_HTTP_ENABLED: true
 
+      # Single-node configuration (disable clustering)
+      KC_CACHE_STACK: local
+      KC_LOG_LEVEL: INFO,org.keycloak.cluster.infinispan:DEBUG,org.jgroups:DEBUG
+
       # Email settings (اختياري)
       KC_EMAIL_ENABLED: ${EMAIL_ENABLED}
       KC_EMAIL_HOST: ${SMTP_HOST}
@@ -58,6 +62,7 @@ services:
       start
       --hostname-strict=false
       --http-enabled=true
+      --cache-stack=local
     ports:
       - "8080:8080"  # يمكن Render يعيد mapping تلقائي
 
