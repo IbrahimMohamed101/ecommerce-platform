@@ -28,18 +28,21 @@ services:
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak123
 
-      # Keycloak Admin User
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      # Keycloak Admin User (using new format for consistency)
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
 
-      # Hostname & Dev/Prod settings
+      # Hostname & Dev/Prod settings (v2 format)
       KC_HOSTNAME: ecommerce-platform-vf9m.onrender.com
-      KC_HOSTNAME_STRICT: false
       KC_HTTP_ENABLED: true
+      KC_HTTP_PORT: 8080
 
-      # Single-node configuration (disable clustering)
-      KC_CACHE_STACK: local
-      KC_LOG_LEVEL: INFO,org.keycloak.cluster.infinispan:DEBUG,org.jgroups:DEBUG
+      # Single-node configuration (Keycloak 23+ format)
+      KC_CACHE: local
+      KC_LOG_LEVEL: INFO
+
+      # Admin Console Configuration
+      KC_ADMIN_ENABLED: true
 
       # Email settings (اختياري)
       KC_EMAIL_ENABLED: ${EMAIL_ENABLED}
@@ -60,9 +63,8 @@ services:
     restart: unless-stopped
     command: >
       start
-      --hostname-strict=false
       --http-enabled=true
-      --cache-stack=local
+      --cache=local
     ports:
       - "8080:8080"  # يمكن Render يعيد mapping تلقائي
 

@@ -1,0 +1,62 @@
+services:
+  - type: web
+    name: keycloak-admin
+    runtime: docker
+    dockerfilePath: keycloak/Dockerfile.keycloak
+    envVars:
+     - key: PORT
+       value: 8080
+     - key: KC_HTTP_PORT
+       value: 8080
+     - key: KC_DB_URL
+       fromSecret: keycloak_db_url
+     - key: KC_DB_USERNAME
+       fromSecret: keycloak_db_username
+     - key: KC_DB_PASSWORD
+       fromSecret: keycloak_db_password
+     - key: KC_BOOTSTRAP_ADMIN_USERNAME
+       value: admin
+     - key: KC_BOOTSTRAP_ADMIN_PASSWORD
+       fromSecret: keycloak_admin_password
+     - key: KC_HOSTNAME
+       fromService:
+         type: web
+         name: keycloak-admin
+         property: host
+     - key: KC_CACHE
+       value: local
+     - key: KC_ADMIN_ENABLED
+       value: true
+     - key: KC_LOG_LEVEL
+       value: DEBUG
+    healthCheckPath: /health/ready
+    disk:
+      name: keycloak-data
+      mountPath: /opt/keycloak/data
+      sizeGB: 10
+
+  - type: pserv
+    name: keycloak-db
+    runtime: docker
+    dockerCommand: postgres:15
+    envVars:
+      - key: POSTGRES_DB
+        value: keycloak
+      - key: POSTGRES_USER
+        fromSecret: keycloak_db_username
+      - key: POSTGRES_PASSWORD
+        fromSecret: keycloak_db_password
+    disk:
+      name: keycloak-db-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 10
+
+secrets:
+  - key: keycloak_db_url
+    value: your-postgresql-connection-string
+  - key: keycloak_db_username
+    value: your-db-username
+  - key: keycloak_db_password
+    value: your-db-password
+  - key: keycloak_admin_password
+    value: your-secure-admin-password
