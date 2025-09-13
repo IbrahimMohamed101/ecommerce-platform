@@ -1,17 +1,17 @@
-# Dockerfile for Keycloak 23+ on Render
+# Dockerfile لـ Keycloak 23+ على Render
 FROM quay.io/keycloak/keycloak:latest
 
-# Database configuration
+# ===== إعدادات الـ DB =====
 ENV KC_DB=postgres
-ENV KC_DB_URL=${KC_DB_URL}
-ENV KC_DB_USERNAME=${DB_USER}
-ENV KC_DB_PASSWORD=${DB_PASSWORD}
+ENV KC_DB_URL=jdbc:postgresql://${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-keycloak}
+ENV KC_DB_USERNAME=${DB_USER:-keycloak}
+ENV KC_DB_PASSWORD=${DB_PASSWORD:-secret}
 
-# Admin user configuration
+# ===== إعدادات الـ Admin =====
 ENV KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME:-admin}
 ENV KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD:-admin}
 
-# Hostname configuration for Render
+# ===== إعدادات Render و Hostname =====
 ENV KC_HOSTNAME=https://ecommerce-platform-1-s0v7.onrender.com
 ENV KC_HOSTNAME_ADMIN_URL=https://ecommerce-platform-1-s0v7.onrender.com
 ENV KC_HOSTNAME_STRICT=false
@@ -20,12 +20,12 @@ ENV KC_HTTP_ENABLED=true
 ENV KC_HTTP_PORT=${PORT:-8080}
 ENV KC_PROXY_HEADERS=xforwarded
 
-# Production settings
+# ===== إعدادات Production =====
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 
-# Expose the port
+# ===== فتح البورت =====
 EXPOSE 8080
 
-# Start Keycloak in production mode (بعد الـ build)
-ENTRYPOINT ["sh", "-c", "/opt/keycloak/bin/kc.sh start --http-port=${KC_HTTP_PORT} --db=postgres --db-url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --proxy-headers=xforwarded --hostname-strict=false"]
+# ===== بدء Keycloak بطريقة آمنة =====
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev"]
