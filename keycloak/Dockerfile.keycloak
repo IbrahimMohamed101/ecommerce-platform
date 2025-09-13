@@ -1,18 +1,32 @@
-# Dockerfile لـ Keycloak 26+ على Render
+# ===== Dockerfile لـ Keycloak 26+ على Render (Quarkus-based) =====
 FROM quay.io/keycloak/keycloak:latest
 
 # ===== إعدادات Admin =====
 ENV KC_BOOTSTRAP_ADMIN_USERNAME=admin
-ENV KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD}
+ENV KC_BOOTSTRAP_ADMIN_PASSWORD=admin
 
-# ===== تشغيل HTTP وتفعيل admin console =====
+# ===== HTTP & Port =====
 ENV KC_HTTP_ENABLED=true
-ENV KC_ADMIN_ENABLED=true
+ENV KC_HTTP_PORT=8080
+ENV KC_PROXY_HEADERS=xforwarded
+
+# ===== Health & Metrics =====
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+
+# ===== Cache & Logging =====
 ENV KC_CACHE=local
 ENV KC_LOG_LEVEL=DEBUG
+
+# ===== Admin Console =====
+ENV KC_ADMIN_ENABLED=true
+
+# ===== Mount Path للـ Data (اختياري للحفظ) =====
+# ممكن تستخدم volume على Render
+VOLUME /opt/keycloak/data
 
 # ===== فتح البورت =====
 EXPOSE 8080
 
-# ===== بدء Keycloak في الوضع الإنتاجي =====
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--cache=local", "--admin-enabled=true"]
+# ===== بدء Keycloak =====
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--cache=local"]
