@@ -16,7 +16,7 @@ ENV KC_HOSTNAME=${RENDER_EXTERNAL_URL}
 ENV KC_HOSTNAME_STRICT=false
 ENV KC_HTTP_ENABLED=true
 ENV KC_HTTP_PORT=${PORT:-8080}
-ENV KC_PROXY_HEADERS=edge
+ENV KC_PROXY_HEADERS=forwarded
 
 # Production settings
 ENV KC_HEALTH_ENABLED=true
@@ -26,4 +26,4 @@ ENV KC_METRICS_ENABLED=true
 EXPOSE 8080
 
 # Start Keycloak in production mode (بعد الـ build)
-ENTRYPOINT ["sh", "-c", "/opt/keycloak/bin/kc.sh start --http-port=${KC_HTTP_PORT} --db=postgres --db-url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --proxy-headers=edge --hostname-strict=false"]
+ENTRYPOINT ["sh", "-c", "/opt/keycloak/bin/kc.sh start --http-port=${KC_HTTP_PORT} --db=postgres --db-url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME} --db-username=${DB_USER} --db-password=${DB_PASSWORD} --proxy-headers=forwarded --hostname-strict=false"]
