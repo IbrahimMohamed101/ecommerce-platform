@@ -3,13 +3,13 @@ FROM quay.io/keycloak/keycloak:latest
 
 # ===== إعدادات الـ DB =====
 ENV KC_DB=postgres
-ENV KC_DB_URL=jdbc:postgresql://${DB_HOST:-postgres}:${DB_PORT:-5432}/${DB_NAME:-keycloak}
-ENV KC_DB_USERNAME=${DB_USER:-keycloak}
-ENV KC_DB_PASSWORD=${DB_PASSWORD:-secret}
+ENV KC_DB_URL=jdbc:postgresql://dpg-d32g543ipnbc73d5js20-a:5432/keycloak_db_yuis
+ENV KC_DB_USERNAME=keycloak_db_yuis_user
+ENV KC_DB_PASSWORD=xuj0ZjSoBD8zwKJBFMbC1Cs6SiI6cZ6q
 
 # ===== إعدادات الـ Admin =====
-ENV KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME:-admin}
-ENV KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD:-admin}
+ENV KC_BOOTSTRAP_ADMIN_USERNAME=admin
+ENV KC_BOOTSTRAP_ADMIN_PASSWORD=admin
 
 # ===== إعدادات Render و Hostname =====
 ENV KC_HOSTNAME=https://ecommerce-platform-1-s0v7.onrender.com
@@ -27,5 +27,5 @@ ENV KC_METRICS_ENABLED=true
 # ===== فتح البورت =====
 EXPOSE 8080
 
-# ===== بدء Keycloak بطريقة آمنة =====
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev"]
+# ===== بدء Keycloak في الوضع الإنتاجي =====
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start"]
