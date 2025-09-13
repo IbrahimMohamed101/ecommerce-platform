@@ -12,7 +12,7 @@ services:
     volumes:
       - keycloak_db_data:/var/lib/postgresql/data
     ports:
-      - "5433:5432"
+      - "5433:5432"   # يمكنك إلغاؤه على Render إذا مش محتاج expose
     networks:
       - keycloak-network
     restart: unless-stopped
@@ -32,7 +32,12 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
 
-      # Email settings from .env (اختياري)
+      # Hostname & Dev/Prod settings
+      KC_HOSTNAME: ecommerce-platform-vf9m.onrender.com
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+
+      # Email settings (اختياري)
       KC_EMAIL_ENABLED: ${EMAIL_ENABLED}
       KC_EMAIL_HOST: ${SMTP_HOST}
       KC_EMAIL_PORT: ${SMTP_PORT}
@@ -44,20 +49,17 @@ services:
       KC_EMAIL_SSL: ${SMTP_SECURE}
       KC_EMAIL_STARTTLS: ${SMTP_REQUIRE_TLS}
 
-      # Hostname & Dev mode settings
-      KC_HOSTNAME: localhost
-      KC_HOSTNAME_STRICT: false
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KC_HTTP_ENABLED: true
-
-    ports:
-      - "8080:8080"
     depends_on:
       - keycloak-db
     networks:
       - keycloak-network
     restart: unless-stopped
-    command: start-dev
+    command: >
+      start
+      --hostname-strict=false
+      --http-enabled=true
+    ports:
+      - "8080:8080"  # يمكن Render يعيد mapping تلقائي
 
   # Ecommerce App
   app:
