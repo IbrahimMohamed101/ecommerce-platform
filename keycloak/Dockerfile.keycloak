@@ -15,6 +15,12 @@ ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
 ENV KC_LOG_LEVEL=INFO
 
+# ===== إعدادات قاعدة البيانات PostgreSQL =====
+ENV KC_DB=postgres
+ENV KC_DB_URL=jdbc:postgresql://dpg-d32g543ipnbc73d5js20-a:5432/keycloak_db_yuis
+ENV KC_DB_USERNAME=keycloak_db_yuis_user
+ENV KC_DB_PASSWORD=xuj0ZjSoBD8zwKJBFMbC1Cs6SiI6cZ6q
+
 # ===== Single Node =====
 ENV KC_CACHE=local
 ENV KC_ADMIN_ENABLED=true
