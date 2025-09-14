@@ -26,4 +26,4 @@ EXPOSE 8080
 RUN /opt/keycloak/bin/kc.sh build
 
 # ===== بدء Keycloak =====
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--http-host=0.0.0.0", "--hostname-strict=false", "--hostname-strict-https=false", "--hostname=ecommerce-platform-1-re24.onrender.com", "--cache=local", "--optimized"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--http-host=0.0.0.0", "--hostname-strict=false", "--hostname=ecommerce-platform-1-re24.onrender.com", "--cache=local", "--optimized"]
