@@ -22,5 +22,8 @@ ENV KC_ADMIN_ENABLED=true
 # ===== فتح البورت =====
 EXPOSE 8080
 
+# ===== بناء Keycloak للإنتاج =====
+RUN /opt/keycloak/bin/kc.sh build --http
+
 # ===== بدء Keycloak =====
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--http-enabled=true", "--http-host=0.0.0.0", "--hostname-strict=false", "--hostname=0.0.0.0", "--cache=local", "--optimized"]
