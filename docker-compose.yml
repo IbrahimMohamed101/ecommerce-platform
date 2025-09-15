@@ -1,41 +1,21 @@
 services:
-  keycloak-postgres:
-    image: postgres:15
-    container_name: keycloak-postgres
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "keycloak"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   keycloak-server:
-    build:
-      context: .
-      dockerfile: keycloak/Dockerfile.keycloak
+    image: quay.io/keycloak/keycloak:26.0.2
     container_name: keycloak-server
-    env_file: .env
     environment:
       - KC_DB=postgres
-      - KC_DB_URL=jdbc:postgresql://keycloak-postgres:5432/keycloak
-      - KC_DB_USERNAME=keycloak
-      - KC_DB_PASSWORD=keycloak
+      - KC_DB_URL=jdbc:postgresql://dpg-d32g543ipnbc73d5js20-a.oregon-postgres.render.com:5432/keycloak_db_yuis
+      - KC_DB_USERNAME=keycloak_db_yuis_user
+      - KC_DB_PASSWORD=xuj0ZjSoBD8zwKJBFMbC1Cs6SiI6cZ6q
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
-      # Hostname config for local development
-      - KC_HOSTNAME=localhost
       - KC_HOSTNAME_STRICT=false
       - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HTTP_ENABLED=true
+      - KC_HEALTH_ENABLED=true
     ports:
       - "8080:8080"
-    depends_on:
-      keycloak-postgres:
-        condition: service_healthy
+    command: start-dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
       interval: 30s
@@ -55,6 +35,3 @@ services:
         condition: service_healthy
     ports:
       - "5000:5000"
-
-volumes:
-  postgres_data:
