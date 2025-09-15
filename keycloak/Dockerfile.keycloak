@@ -10,7 +10,7 @@ FROM quay.io/keycloak/keycloak:23.0
 # Copy optimized build
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# Environment variables مع تقليل الـ logging
+# Environment variables optimized for single instance deployment
 ENV KC_DB=postgres \
     KC_HTTP_ENABLED=true \
     KC_HTTP_HOST=0.0.0.0 \
@@ -19,16 +19,19 @@ ENV KC_DB=postgres \
     KC_CACHE=local \
     KC_HEALTH_ENABLED=true \
     KC_METRICS_ENABLED=true \
-    QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY=true \
-    JAVA_OPTS_APPEND="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true"
+    KC_CLUSTERING=false \
+    QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY=false
 
-# إعدادات الـ logging المحسنة
-ENV KC_LOG_LEVEL=WARN \
+# Optimized logging
+ENV KC_LOG_LEVEL=INFO \
     KC_LOG_CONSOLE_COLOR=false \
     KC_LOG_CONSOLE_OUTPUT=default \
-    QUARKUS_LOG_LEVEL=WARN \
-    QUARKUS_LOG_CATEGORY_ORG_KEYCLOAK_SERVICES_SCHEDULED_LEVEL=WARN \
-    QUARKUS_LOG_CATEGORY_ORG_KEYCLOAK_TRANSACTION_LEVEL=WARN
+    QUARKUS_LOG_LEVEL=INFO \
+    QUARKUS_LOG_CATEGORY_ORG_JGROUPS_LEVEL=WARN \
+    QUARKUS_LOG_CATEGORY_LIQUIBASE_LEVEL=INFO
+
+# JVM optimization for container
+ENV JAVA_OPTS_APPEND="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dkeycloak.profile=production"
 
 # Create data directory
 USER root
@@ -41,6 +44,10 @@ VOLUME ["/opt/keycloak/data"]
 # Expose port
 EXPOSE 8080
 
-# Start command
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health/ready || exit 1
+
+# Start command - simplified to avoid conflicts
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
-CMD ["start", "--optimized", "--http-enabled=true", "--hostname-strict=false", "--log-level=WARN"]
+CMD ["start", "--optimized"]
