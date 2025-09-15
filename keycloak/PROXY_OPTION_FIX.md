@@ -28,8 +28,9 @@ The `--proxy-headers` option is not valid for Keycloak 23.0. The correct option 
 
 ### Keycloak 23.0 Proxy Options
 
-For Keycloak 23.0, the correct proxy configuration is:
-- `--proxy=xforwarded` - For forwarded headers (recommended for Render)
+For Keycloak 23.0, the valid proxy configuration values are:
+- `--proxy=edge` - For edge proxy with forwarded headers (recommended for Render)
+- `--proxy=reencrypt` - For re-encrypting proxy
 - `--proxy=passthrough` - For direct proxy passthrough
 - `--proxy=none` - To disable proxy support
 
