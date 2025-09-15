@@ -42,6 +42,8 @@ services:
       # Cache and clustering (disabled for single instance)
       - key: KC_CACHE
         value: local
+      - key: KC_CACHE_STACK
+        value: local
       
       # Health and metrics
       - key: KC_HEALTH_ENABLED
@@ -49,7 +51,7 @@ services:
       - key: KC_METRICS_ENABLED
         value: true
       
-      # Database migration and recovery - Force override
+      # Database migration and recovery - NUCLEAR RESET MODE
       - key: QUARKUS_LIQUIBASE_MIGRATE_AT_START
         value: "true"
       - key: QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE
@@ -57,7 +59,7 @@ services:
       - key: QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS
         value: "true"
       - key: QUARKUS_LIQUIBASE_DROP_FIRST
-        value: "false"
+        value: "true"
       - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
         value: "false"
       
