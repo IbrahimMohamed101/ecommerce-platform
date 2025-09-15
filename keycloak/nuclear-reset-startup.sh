@@ -34,10 +34,15 @@ export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgrou
 log "Starting Keycloak with NUCLEAR RESET configuration..."
 log "JVM Options: $JAVA_OPTS_APPEND"
 
+# DIAGNOSTIC: Log the exact command being executed
+log "DIAGNOSTIC: Checking if image is pre-built optimized..."
+log "DIAGNOSTIC: The --db option cannot be used with --optimized in pre-built images"
+log "DIAGNOSTIC: Database type was already configured during Docker build"
+
 # Start Keycloak with nuclear reset
+# FIXED: Removed --db=postgres as it's already built into the optimized image
 exec /opt/keycloak/bin/kc.sh start \
     --optimized \
-    --db=postgres \
     --db-url="$KC_DB_URL" \
     --db-username="$KC_DB_USERNAME" \
     --db-password="$KC_DB_PASSWORD" \
