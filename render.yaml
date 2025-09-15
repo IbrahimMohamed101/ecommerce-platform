@@ -17,11 +17,13 @@ services:
     region: oregon
     plan: starter
     envVars:
-      # Port configuration
+      # Port configuration - Render handles HTTPS
       - key: PORT
         value: 8080
-      - key: KC_HTTP_PORT
-        value: 8080
+      - key: KC_HTTP_ENABLED
+        value: false
+      - key: KC_HTTPS_PORT
+        value: 443
       - key: KC_HTTP_HOST
         value: 0.0.0.0
       
@@ -58,8 +60,6 @@ services:
         value: https://ecommerce-platform-1-re24.onrender.com
       
       # Performance settings
-      - key: KC_HTTP_ENABLED
-        value: true
       - key: KC_CACHE
         value: local
       - key: KC_HEALTH_ENABLED
