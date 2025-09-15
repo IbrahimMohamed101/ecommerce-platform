@@ -42,8 +42,6 @@ services:
       # Cache and clustering (disabled for single instance)
       - key: KC_CACHE
         value: local
-      - key: KC_CACHE_STACK
-        value: local
       
       # Health and metrics
       - key: KC_HEALTH_ENABLED
@@ -64,8 +62,6 @@ services:
         value: "false"
       
       # Force single-node operation - Complete clustering disable
-      - key: KC_CACHE_STACK
-        value: "local"
       - key: KC_CLUSTERING
         value: "false"
       - key: JGROUPS_DISCOVERY_PROTOCOL
