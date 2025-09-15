@@ -51,29 +51,45 @@ services:
       - key: KC_METRICS_ENABLED
         value: true
       
-      # Database migration and recovery
+      # Database migration and recovery - Enhanced for debugging
       - key: QUARKUS_LIQUIBASE_MIGRATE_AT_START
         value: true
       - key: QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE
         value: false
       - key: QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS
         value: true
+      - key: QUARKUS_LIQUIBASE_DROP_FIRST
+        value: false
       - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
         value: false
       
-      # Logging
+      # Force single-node operation - Enhanced clustering disable
+      - key: KC_CACHE_CONFIG_FILE
+        value: cache-local.xml
+      - key: JGROUPS_DISCOVERY_PROTOCOL
+        value: LOCAL
+      - key: KC_CLUSTERING
+        value: false
+      
+      # Enhanced logging for debugging
       - key: KC_LOG_LEVEL
-        value: INFO
+        value: DEBUG
       - key: QUARKUS_LOG_LEVEL
         value: INFO
       - key: QUARKUS_LOG_CATEGORY_ORG_JGROUPS_LEVEL
-        value: WARN
+        value: DEBUG
       - key: QUARKUS_LOG_CATEGORY_LIQUIBASE_LEVEL
+        value: DEBUG
+      - key: QUARKUS_LOG_CATEGORY_ORG_KEYCLOAK_CONNECTIONS_JPA_LEVEL
+        value: DEBUG
+      - key: QUARKUS_LOG_CATEGORY_ORG_HIBERNATE_LEVEL
         value: INFO
+      - key: QUARKUS_LOG_CATEGORY_ORG_INFINISPAN_LEVEL
+        value: DEBUG
       
-      # JVM options
+      # JVM options - Enhanced for debugging and single-node operation
       - key: JAVA_OPTS_APPEND
-        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true"
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dkeycloak.profile=production"
     
     healthCheckPath: /health/ready
     disk:

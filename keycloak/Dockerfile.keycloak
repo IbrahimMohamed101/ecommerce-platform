@@ -20,7 +20,8 @@ ENV KC_DB=postgres \
     KC_HEALTH_ENABLED=true \
     KC_METRICS_ENABLED=true \
     KC_CLUSTERING=false \
-    QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY=false
+    QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY=false \
+    JGROUPS_DISCOVERY_PROTOCOL=LOCAL
 
 # Optimized logging
 ENV KC_LOG_LEVEL=INFO \
@@ -30,12 +31,21 @@ ENV KC_LOG_LEVEL=INFO \
     QUARKUS_LOG_CATEGORY_ORG_JGROUPS_LEVEL=WARN \
     QUARKUS_LOG_CATEGORY_LIQUIBASE_LEVEL=INFO
 
-# JVM optimization for container
-ENV JAVA_OPTS_APPEND="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dkeycloak.profile=production"
+# JVM optimization for container - Enhanced for single-node operation
+ENV JAVA_OPTS_APPEND="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dkeycloak.profile=production"
 
-# Create data directory
+# Install PostgreSQL client for diagnostic checks and create data directory
 USER root
-RUN mkdir -p /opt/keycloak/data && chown 1000:1000 /opt/keycloak/data
+RUN microdnf install -y postgresql && \
+    mkdir -p /opt/keycloak/data && \
+    chown 1000:1000 /opt/keycloak/data
+
+# Copy diagnostic scripts
+COPY keycloak/diagnostic-startup.sh /opt/keycloak/bin/diagnostic-startup.sh
+COPY keycloak/reset-database.sql /opt/keycloak/reset-database.sql
+RUN chmod +x /opt/keycloak/bin/diagnostic-startup.sh && \
+    chown 1000:1000 /opt/keycloak/bin/diagnostic-startup.sh /opt/keycloak/reset-database.sql
+
 USER 1000
 
 # Volume for data
@@ -48,6 +58,5 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8080/health/ready || exit 1
 
-# Start command - simplified to avoid conflicts
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
-CMD ["start", "--optimized"]
+# Start command - using diagnostic startup script
+ENTRYPOINT ["/opt/keycloak/bin/diagnostic-startup.sh"]
