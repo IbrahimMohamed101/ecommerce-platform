@@ -44,6 +44,4 @@ exec /opt/keycloak/bin/kc.sh start \
     --proxy=edge \
     --http-enabled=true \
     --http-host=0.0.0.0 \
-    --http-port=8080 \
-    --health-enabled=true \
-    --metrics-enabled=true
+    --http-port=8080
