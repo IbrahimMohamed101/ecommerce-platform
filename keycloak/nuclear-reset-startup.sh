@@ -18,7 +18,7 @@ export QUARKUS_LIQUIBASE_MIGRATE_AT_START=true
 export QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE=false
 export QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS=true
 export QUARKUS_LIQUIBASE_DROP_FIRST=true
-export KC_CACHE=local
+export KC_CACHE=tcp             # Changed from 'local' to supported value
 export KC_CLUSTERING=false
 
 log "Environment variables set:"
@@ -29,26 +29,26 @@ log "  KC_CACHE: $KC_CACHE"
 log "  KC_CLUSTERING: $KC_CLUSTERING"
 
 # Nuclear JVM options - force everything through system properties
-export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dinfinispan.cluster.name=local -Dinfinispan.node.name=single-node -Djgroups.discovery.protocol=LOCAL -Dquarkus.liquibase.migrate-at-start=true -Dquarkus.liquibase.validate-on-migrate=false -Dquarkus.liquibase.clear-checksums=true -Dquarkus.liquibase.drop-first=true"
+export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production \
+-Djgroups.bind_addr=127.0.0.1 \
+-Djgroups.tcpping.initial_hosts=127.0.0.1[7800] \
+-Dinfinispan.cluster.name=local \
+-Dinfinispan.node.name=single-node \
+-Djgroups.discovery.protocol=LOCAL \
+-Dquarkus.liquibase.migrate-at-start=true \
+-Dquarkus.liquibase.validate-on-migrate=false \
+-Dquarkus.liquibase.clear-checksums=true \
+-Dquarkus.liquibase.drop-first=true"
 
 log "Starting Keycloak with NUCLEAR RESET configuration..."
 log "JVM Options: $JAVA_OPTS_APPEND"
 
-# DIAGNOSTIC: Log the exact command being executed
-log "DIAGNOSTIC: Checking if image is pre-built optimized..."
-log "DIAGNOSTIC: The --db option cannot be used with --optimized in pre-built images"
-log "DIAGNOSTIC: Database type was already configured during Docker build"
-
 # Start Keycloak with nuclear reset
-# FIXED: Removed --db=postgres as it's already built into the optimized image
 exec /opt/keycloak/bin/kc.sh start \
     --optimized \
-    --db-url="$KC_DB_URL" \
-    --db-username="$KC_DB_USERNAME" \
-    --db-password="$KC_DB_PASSWORD" \
     --hostname="$KC_HOSTNAME" \
     --hostname-strict=false \
-    --proxy-headers=xforwarded \
+    --proxy=passthrough \
     --http-enabled=true \
     --http-host=0.0.0.0 \
     --http-port=8080 \
