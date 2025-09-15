@@ -26,8 +26,8 @@ log "  QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE: $QUARKUS_LIQUIBASE_VALIDATE_ON_MIG
 log "  KC_CACHE: $KC_CACHE"
 log "  KC_CLUSTERING: $KC_CLUSTERING"
 
-# Enhanced JVM options to completely disable clustering
-export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dinfinispan.cluster.name=local -Dinfinispan.node.name=single-node -Djgroups.discovery.protocol=LOCAL"
+# Enhanced JVM options with Liquibase overrides and clustering disable
+export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dinfinispan.cluster.name=local -Dinfinispan.node.name=single-node -Djgroups.discovery.protocol=LOCAL -Dquarkus.liquibase.migrate-at-start=true -Dquarkus.liquibase.validate-on-migrate=false -Dquarkus.liquibase.clear-checksums=true"
 
 log "Starting Keycloak with force reset configuration..."
 log "JVM Options: $JAVA_OPTS_APPEND"
