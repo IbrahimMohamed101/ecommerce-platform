@@ -33,18 +33,7 @@ export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgrou
 log "Starting Keycloak with force reset configuration..."
 log "JVM Options: $JAVA_OPTS_APPEND"
 
-# Start Keycloak with explicit parameters (no build-time options with --optimized)
+# Start Keycloak without build-time DB options
 exec /opt/keycloak/bin/kc.sh start \
     --optimized \
-    --db=postgres \
-    --db-url="$KC_DB_URL" \
-    --db-username="$KC_DB_USERNAME" \
-    --db-password="$KC_DB_PASSWORD" \
-    --hostname="$KC_HOSTNAME" \
-    --hostname-strict=false \
-    --proxy-headers=xforwarded \
-    --http-enabled=true \
-    --http-host=0.0.0.0 \
-    --http-port=8080 \
-    --health-enabled=true \
-    --metrics-enabled=true
+    --hostname="$KC
