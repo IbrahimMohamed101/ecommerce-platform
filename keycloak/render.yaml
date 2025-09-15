@@ -51,25 +51,33 @@ services:
       - key: KC_METRICS_ENABLED
         value: true
       
-      # Database migration and recovery - Enhanced for debugging
+      # Database migration and recovery - Force override
       - key: QUARKUS_LIQUIBASE_MIGRATE_AT_START
-        value: true
+        value: "true"
       - key: QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE
-        value: false
+        value: "false"
       - key: QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS
-        value: true
+        value: "true"
       - key: QUARKUS_LIQUIBASE_DROP_FIRST
-        value: false
+        value: "false"
       - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
-        value: false
+        value: "false"
       
-      # Force single-node operation - Enhanced clustering disable
-      - key: KC_CACHE_CONFIG_FILE
-        value: cache-local.xml
-      - key: JGROUPS_DISCOVERY_PROTOCOL
-        value: LOCAL
+      # Force single-node operation - Complete clustering disable
+      - key: KC_CACHE_STACK
+        value: "local"
       - key: KC_CLUSTERING
-        value: false
+        value: "false"
+      - key: JGROUPS_DISCOVERY_PROTOCOL
+        value: "LOCAL"
+      - key: KC_CACHE_CONFIG_FILE
+        value: "cache-local.xml"
+      
+      # Additional Infinispan overrides
+      - key: QUARKUS_INFINISPAN_CLIENT_DEVSERVICES_ENABLED
+        value: "false"
+      - key: QUARKUS_INFINISPAN_CLIENT_HOSTS
+        value: "localhost:11222"
       
       # Enhanced logging for debugging
       - key: KC_LOG_LEVEL
