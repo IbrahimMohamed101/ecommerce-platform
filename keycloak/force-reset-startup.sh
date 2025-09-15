@@ -28,12 +28,23 @@ log "  KC_CACHE: $KC_CACHE"
 log "  KC_CLUSTERING: $KC_CLUSTERING"
 
 # Enhanced JVM options to completely disable clustering
-export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dinfinispan.cluster.name=local -Dinfinispan.node.name=single-node -Djgroups.discovery.protocol=LOCAL"
+export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1\\[7800\\] -Dinfinispan.cluster.name=local -Dinfinispan.node.name=single-node -Djgroups.discovery.protocol=LOCAL"
 
 log "Starting Keycloak with force reset configuration..."
 log "JVM Options: $JAVA_OPTS_APPEND"
 
-# Start Keycloak without build-time DB options
+# Start Keycloak with explicit parameters (no build-time options with --optimized)
 exec /opt/keycloak/bin/kc.sh start \
     --optimized \
-    --hostname="$KC
+    --db=postgres \
+    --db-url="$KC_DB_URL" \
+    --db-username="$KC_DB_USERNAME" \
+    --db-password="$KC_DB_PASSWORD" \
+    --hostname="$KC_HOSTNAME" \
+    --hostname-strict=false \
+    --proxy-headers=xforwarded \
+    --http-enabled=true \
+    --http-host=0.0.0.0 \
+    --http-port=8080 \
+    --health-enabled=true \
+    --metrics-enabled=true
