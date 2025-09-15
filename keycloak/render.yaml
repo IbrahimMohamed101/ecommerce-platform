@@ -51,15 +51,8 @@ services:
       - key: KC_METRICS_ENABLED
         value: true
       
-      # Database migration and recovery - NUCLEAR RESET MODE
-      - key: QUARKUS_LIQUIBASE_MIGRATE_AT_START
-        value: "true"
-      - key: QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE
-        value: "false"
-      - key: QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS
-        value: "true"
-      - key: QUARKUS_LIQUIBASE_DROP_FIRST
-        value: "true"
+      # Database migration and recovery - Using system properties for higher precedence
+      # QUARKUS_LIQUIBASE_* variables moved to JVM system properties in startup script
       - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
         value: "false"
       
