@@ -34,10 +34,9 @@ ENV KC_LOG_LEVEL=INFO \
 # JVM optimization for container - Enhanced for single-node operation
 ENV JAVA_OPTS_APPEND="-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dkeycloak.profile=production"
 
-# Install PostgreSQL client for diagnostic checks and create data directory
+# Create data directory and copy diagnostic scripts
 USER root
-RUN microdnf install -y postgresql && \
-    mkdir -p /opt/keycloak/data && \
+RUN mkdir -p /opt/keycloak/data && \
     chown 1000:1000 /opt/keycloak/data
 
 # Copy diagnostic scripts
