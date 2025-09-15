@@ -14,6 +14,14 @@ services:
         value: admin
       - key: KC_LOG_LEVEL
         value: INFO
+      - key: KC_DB_URL
+        value: jdbc:postgresql://dpg-d32g543ipnbc73d5js20-a:5432/keycloak_db_yuis
+      - key: KC_DB_USERNAME
+        value: keycloak_db_yuis_user
+      - key: KC_DB_PASSWORD
+        value: xuj0ZjSoBD8zwKJBFMbC1Cs6SiI6cZ6q
+      - key: KC_HOSTNAME
+        value: ecommerce-platform-1-re24.onrender.com
     healthCheckPath: /health/ready
     disk:
       name: keycloak-data

@@ -172,6 +172,11 @@ const initKeycloak = (app) => {
     })
   );
 
+  console.log('🔧 Initializing Keycloak...');
+  console.log(`🔗 Keycloak Server URL: ${process.env.KEYCLOAK_SERVER_URL || "http://localhost:8080/"}`);
+  console.log(`🏰 Keycloak Realm: ${process.env.KEYCLOAK_REALM || "ecommerce"}`);
+  console.log(`📱 Keycloak Client ID: ${process.env.KEYCLOAK_CLIENT_ID || "ecommerce-platform"}`);
+
   _keycloak = new Keycloak({ store: sessionStore }, {
    "realm": process.env.KEYCLOAK_REALM || "ecommerce",
    "auth-server-url": process.env.KEYCLOAK_SERVER_URL || "http://localhost:8080/",
@@ -179,8 +184,9 @@ const initKeycloak = (app) => {
    "resource": process.env.KEYCLOAK_CLIENT_ID || "ecommerce-platform",
    "public-client": true,
    "confidential-port": 0
- });
+  });
 
+  console.log('✅ Keycloak initialized successfully');
   return _keycloak;
 };
 

@@ -16,7 +16,7 @@ class Database {
       };
 
       console.log('🔌 Connecting to MongoDB Atlas...');
-      
+
       this.connection = await mongoose.connect(config.MONGODB.URI, options);
       this.isConnected = true;
 

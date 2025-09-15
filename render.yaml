@@ -1,0 +1,176 @@
+# render.yaml - نسخة محدثة ومُصلحة لـ Render.com
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: keycloak-db
+    runtime: postgresql
+    plan: starter
+    databaseName: keycloak_db
+    user: keycloak_user
+    region: oregon
+
+  # Keycloak Service
+  - type: web
+    name: keycloak-server
+    runtime: docker
+    dockerfilePath: keycloak/Dockerfile.keycloak
+    region: oregon
+    plan: starter
+    envVars:
+      # Port configuration
+      - key: PORT
+        value: 8080
+      - key: KC_HTTP_PORT
+        value: 8080
+      - key: KC_HTTP_HOST
+        value: 0.0.0.0
+      
+      # Admin credentials
+      - key: KC_BOOTSTRAP_ADMIN_USERNAME
+        value: admin
+      - key: KC_BOOTSTRAP_ADMIN_PASSWORD
+        value: admin123secure  # غير كلمة المرور للإنتاج
+        
+      # Database connection - Render format
+      - key: KC_DB
+        value: postgres
+      - key: KC_DB_URL
+        fromDatabase:
+          name: keycloak-db
+          property: connectionString
+      - key: KC_DB_USERNAME
+        fromDatabase:
+          name: keycloak-db
+          property: user
+      - key: KC_DB_PASSWORD
+        fromDatabase:
+          name: keycloak-db
+          property: password
+      
+      # Hostname configuration - مهم جداً لـ Render
+      - key: KC_HOSTNAME_STRICT
+        value: false
+      - key: KC_PROXY_HEADERS
+        value: xforwarded
+      - key: KC_HOSTNAME_ADMIN_URL
+        value: https://ecommerce-platform-1-re24.onrender.com
+      
+      # Performance settings
+      - key: KC_HTTP_ENABLED
+        value: true
+      - key: KC_CACHE
+        value: local
+      - key: KC_HEALTH_ENABLED
+        value: true
+      - key: KC_METRICS_ENABLED
+        value: true
+      - key: KC_LOG_LEVEL
+        value: INFO
+        
+      # Transaction recovery
+      - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
+        value: true
+        
+      # JVM settings
+      - key: JAVA_OPTS_APPEND
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true"
+
+    healthCheckPath: /health/ready
+
+  # E-commerce Application
+  - type: web
+    name: ecommerce-app
+    runtime: docker
+    dockerfilePath: Dockerfile
+    region: oregon
+    plan: starter
+    envVars:
+      # Basic app configuration
+      - key: PORT
+        value: 5000
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      
+      # Keycloak integration - استخدم External URL لـ Render
+      - key: KEYCLOAK_SERVER_URL
+        value: https://ecommerce-platform-1-re24.onrender.com
+      - key: KEYCLOAK_REALM
+        value: ecommerce
+      - key: KEYCLOAK_CLIENT_ID
+        value: ecommerce-platform
+      - key: KEYCLOAK_CLIENT_SECRET
+        value: 8fujpEeC2Ge2bUjS74YBaTHEvDblYOdi
+      - key: KEYCLOAK_ADMIN_CLIENT_ID
+        value: admin-cli
+      - key: KEYCLOAK_ADMIN_USERNAME
+        value: admin
+      - key: KEYCLOAK_ADMIN_PASSWORD
+        value: admin123secure  # نفس كلمة المرور بتاعة Keycloak
+        
+      # Security secrets
+      - key: JWT_SECRET
+        value: 1f8dc8024dadc2dbe41e4c1f41b520c7
+      - key: SESSION_SECRET
+        value: 83633baa367086ec2a1fd52749aec952b428ca25b79c8ee0d794e4d2afda03b0863deeee6d8d83420fbf7ab32406bc109ed72115535cb2d7bf31f03a39229a7e
+      - key: BCRYPT_SALT_ROUNDS
+        value: 12
+        
+      # Database
+      - key: MONGODB_URI
+        value: mongodb+srv://hemaatar636:011461519790@e-commerc.ucru6.mongodb.net/ecom-db?retryWrites=true&w=majority&appName=E-COMMERC
+        
+      # CORS and URLs
+      - key: FRONTEND_URL
+        value: https://your-frontend-domain.onrender.com
+      - key: BACKEND_URL
+        value: https://ecommerce-platform-vf9m.onrender.com
+      - key: CORS_ORIGIN
+        value: https://your-frontend-domain.onrender.com
+        
+      # Rate limiting
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+        
+      # Logging
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_FILE_PATH
+        value: /tmp/app.log
+        
+      # Email configuration
+      - key: EMAIL_ENABLED
+        value: true
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_REQUIRE_TLS
+        value: true
+      - key: SMTP_USER
+        value: hemaatar636@gmail.com
+      - key: SMTP_PASSWORD
+        value: vwyw bqap yrea jeun
+      - key: EMAIL_FROM
+        value: hemaatar636@gmail.com
+      - key: EMAIL_FROM_NAME
+        value: E-commerce Store
+      - key: ADMIN_EMAIL
+        value: hemaatar636@gmail.com
+        
+      # Super admin
+      - key: SUPER_ADMIN_EMAIL
+        value: hemaatar4@gmail.com
+      - key: SUPER_ADMIN_PASSWORD
+        value: 011461519790sS@
+        
+      # Performance optimizations
+      - key: SKIP_USERINFO
+        value: true
+
+    healthCheckPath: /health

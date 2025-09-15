@@ -56,14 +56,41 @@ app.use((req, res, next) => {
 // Request logging
 app.use(requestLogger);
 
+// Debug logging for all requests
+app.use((req, res, next) => {
+  console.log(`🔍 [DEBUG] ${req.method} ${req.path} - Headers: ${JSON.stringify(req.headers.authorization ? 'Bearer token present' : 'No auth')}`);
+  next();
+});
+
 // Body parsing middleware
 app.use(express.static(path.join(__dirname, "..", "public")));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Keycloak
+console.log('🔐 Setting up Keycloak authentication...');
 const keycloak = initKeycloak(app);
+console.log('🔑 Keycloak instance created:', keycloak ? 'Success' : 'Failed');
 app.use(keycloak.middleware());
+console.log('🔐 Keycloak middleware applied');
+
+// Root route
+app.get('/', (req, res) => {
+  console.log('🏠 [DEBUG] Root route accessed');
+  res.json({
+    success: true,
+    message: 'E-commerce Platform API',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      users: '/api/users',
+      products: '/api/products',
+      admin: '/api/admin',
+      docs: '/api-docs'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
 
 // ✅ Routes
 app.use('/api/auth', require('./modules/auth/auth.routes'));
