@@ -22,6 +22,22 @@ services:
         value: xuj0ZjSoBD8zwKJBFMbC1Cs6SiI6cZ6q
       - key: KC_HOSTNAME
         value: ecommerce-platform-1-re24.onrender.com
+      - key: KC_HOSTNAME_STRICT
+        value: false
+      - key: KC_PROXY_HEADERS
+        value: xforwarded
+      - key: KC_HTTP_ENABLED
+        value: true
+      - key: KC_CACHE
+        value: local
+      - key: KC_HEALTH_ENABLED
+        value: true
+      - key: KC_METRICS_ENABLED
+        value: true
+      - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
+        value: true
+      - key: JAVA_OPTS_APPEND
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true"
     healthCheckPath: /health/ready
     disk:
       name: keycloak-data
