@@ -36,7 +36,7 @@ META-INF/jpa-changelog-2.5.0.xml::2.5.0-unicode-oracle::hmlnarik@redhat.com was:
 ### 4. Proxy Configuration Inconsistency
 - **Issue**: Script used `--proxy=passthrough` while `render.yaml` had `xforwarded`
 - **Impact**: Proxy header handling issues
-- **Solution**: Updated script to use `--proxy-headers=xforwarded`
+- **Solution**: Updated script to use `--proxy=xforwarded` (corrected option name)
 
 ## Applied Fixes
 
@@ -72,7 +72,7 @@ exec /opt/keycloak/bin/kc.sh start \
     --db-password="$KC_DB_PASSWORD" \
     --hostname="$KC_HOSTNAME" \
     --hostname-strict=false \
-    --proxy-headers=xforwarded \  # Fixed from passthrough
+    --proxy=xforwarded \  # Fixed from passthrough and corrected option name
     --http-enabled=true \
     --http-host=0.0.0.0 \
     --http-port=8080 \
