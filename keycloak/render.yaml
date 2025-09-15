@@ -29,7 +29,9 @@ services:
       - key: KC_HTTP_ENABLED
         value: true
       - key: KC_CACHE
-        value: local
+        value: ispn
+      - key: KC_CACHE_STACK
+        value: tcp
       - key: KC_HEALTH_ENABLED
         value: true
       - key: KC_METRICS_ENABLED
