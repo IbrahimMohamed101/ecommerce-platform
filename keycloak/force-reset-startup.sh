@@ -5,14 +5,14 @@ echo "=== Keycloak Force Reset Startup Script ==="
 echo "Timestamp: $(date)"
 echo "Environment: Production - AGGRESSIVE RESET MODE"
 
-# Logging function
+# Function to log with timestamp
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
 
 log "FORCE RESET MODE: This will clear Liquibase checksums and force fresh migration"
 
-# Explicitly set critical environment variables
+# Set critical environment variables explicitly
 export QUARKUS_LIQUIBASE_MIGRATE_AT_START=true
 export QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE=false
 export QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS=true
@@ -33,7 +33,7 @@ export JAVA_OPTS_APPEND="$JAVA_OPTS_APPEND -Dkeycloak.profile=production -Djgrou
 log "Starting Keycloak with force reset configuration..."
 log "JVM Options: $JAVA_OPTS_APPEND"
 
-# Start Keycloak without --optimized (to fix pre-built image issue)
+# Start Keycloak with explicit parameters (no build-time options with --optimized)
 exec /opt/keycloak/bin/kc.sh start \
     --db=postgres \
     --db-url="$KC_DB_URL" \
@@ -41,7 +41,7 @@ exec /opt/keycloak/bin/kc.sh start \
     --db-password="$KC_DB_PASSWORD" \
     --hostname="$KC_HOSTNAME" \
     --hostname-strict=false \
-    --proxy-headers=xforwarded \
+    --proxy passthrough \
     --http-enabled=true \
     --http-host=0.0.0.0 \
     --http-port=8080 \
