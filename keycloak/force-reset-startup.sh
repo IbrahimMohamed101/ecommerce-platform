@@ -18,7 +18,6 @@ export QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE=false
 export QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS=true
 export QUARKUS_LIQUIBASE_DROP_FIRST=false
 export KC_CACHE=local
-export KC_CACHE_STACK=local
 export KC_CLUSTERING=false
 
 log "Environment variables set:"
