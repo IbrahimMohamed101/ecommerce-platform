@@ -13,7 +13,11 @@ services:
       - key: KC_BOOTSTRAP_ADMIN_PASSWORD
         value: admin
       - key: KC_LOG_LEVEL
-        value: INFO
+        value: DEBUG
+      - key: QUARKUS_LOG_CATEGORY_ORG_JGROUPS_LEVEL
+        value: DEBUG
+      - key: QUARKUS_LOG_CATEGORY_LIQUIBASE_LEVEL
+        value: DEBUG
       - key: KC_DB_URL
         value: jdbc:postgresql://dpg-d32g543ipnbc73d5js20-a:5432/keycloak_db_yuis
       - key: KC_DB_USERNAME
@@ -29,12 +33,12 @@ services:
       - key: KC_HTTP_ENABLED
         value: true
       - key: KC_CACHE
-        value: ispn
-      - key: KC_CACHE_STACK
-        value: tcp
+        value: local
       - key: KC_HEALTH_ENABLED
         value: true
       - key: KC_METRICS_ENABLED
+        value: true
+      - key: QUARKUS_LIQUIBASE_CLEAR_CHECKSUMS
         value: true
       - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
         value: true
