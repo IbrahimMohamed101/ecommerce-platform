@@ -1,0 +1,85 @@
+services:
+  - type: web
+    name: keycloak-admin
+    runtime: docker
+    dockerfilePath: keycloak/Dockerfile.keycloak-optimized
+    plan: starter
+    envVars:
+      # Basic server configuration
+      - key: PORT
+        value: 8080
+      - key: KC_HTTP_PORT
+        value: 8080
+      - key: KC_HTTP_ENABLED
+        value: true
+      - key: KC_HTTP_HOST
+        value: 0.0.0.0
+      
+      # Admin user
+      - key: KC_BOOTSTRAP_ADMIN_USERNAME
+        value: admin
+      - key: KC_BOOTSTRAP_ADMIN_PASSWORD
+        value: admin # Change this to a secure password!
+      
+      # Database connection with optimized timeouts for Render
+      - key: KC_DB
+        value: postgres
+      - key: KC_DB_URL
+        value: jdbc:postgresql://dpg-d32g543ipnbc73d5js20-a:5432/keycloak_db_yuis?connectTimeout=5000&socketTimeout=10000&loginTimeout=10&tcpKeepAlive=true&ApplicationName=keycloak-render
+      - key: KC_DB_USERNAME
+        value: keycloak_db_yuis_user
+      - key: KC_DB_PASSWORD
+        value: xuj0ZjSoBD8zwKJBFMbC1Cs6SiI6cZ6q
+      
+      # Hostname and proxy configuration
+      - key: KC_HOSTNAME
+        value: ecommerce-platform-1-re24.onrender.com
+      - key: KC_HOSTNAME_STRICT
+        value: false
+      - key: KC_PROXY
+        value: edge
+      
+      # ✅ COMPLETE CLUSTERING DISABLE - Single Node Optimization
+      - key: KC_CACHE
+        value: local
+      - key: KC_CACHE_STACK
+        value: local
+      - key: KC_CLUSTERING
+        value: false
+      
+      # ✅ PERFORMANCE OPTIMIZATIONS - Disable unnecessary features during startup
+      - key: KC_HEALTH_ENABLED
+        value: false  # Disabled during startup for faster boot
+      - key: KC_METRICS_ENABLED
+        value: false  # Disabled during startup for faster boot
+      
+      # ✅ TRANSACTION OPTIMIZATION - Disable recovery for faster startup
+      - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
+        value: "false"
+      
+      # ✅ OPTIMIZED LOGGING - WARN level for fastest startup
+      - key: KC_LOG_LEVEL
+        value: WARN
+      - key: QUARKUS_LOG_LEVEL
+        value: WARN
+      - key: QUARKUS_LOG_CATEGORY_ORG_JGROUPS_LEVEL
+        value: ERROR
+      - key: QUARKUS_LOG_CATEGORY_LIQUIBASE_LEVEL
+        value: WARN
+      - key: QUARKUS_LOG_CATEGORY_ORG_KEYCLOAK_CONNECTIONS_JPA_LEVEL
+        value: WARN
+      - key: QUARKUS_LOG_CATEGORY_ORG_HIBERNATE_LEVEL
+        value: WARN
+      - key: QUARKUS_LOG_CATEGORY_ORG_INFINISPAN_LEVEL
+        value: ERROR
+      
+      # ✅ RENDER FREE TIER OPTIMIZED JVM - 50% heap for 512MB container
+      - key: JAVA_OPTS_APPEND
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -XX:+UseG1GC -XX:+UseStringDeduplication -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dquarkus.liquibase.migrate-at-start=true -Dquarkus.liquibase.validate-on-migrate=false -Dquarkus.liquibase.clear-checksums=true -Dquarkus.transaction-manager.enable-recovery=false -Dkeycloak.profile=production -Djgroups.bind_addr=SITE_LOCAL -Dinfinispan.cluster.stack=local"
+    
+    # ✅ RENDER OPTIMIZED HEALTH CHECK - Longer timeout for slow startup
+    healthCheckPath: /health/ready
+    disk:
+      name: keycloak-data
+      mountPath: /opt/keycloak/data
+      sizeGB: 1
