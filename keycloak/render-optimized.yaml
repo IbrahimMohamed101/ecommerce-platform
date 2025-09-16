@@ -78,7 +78,7 @@ services:
         value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -XX:+UseG1GC -XX:+UseStringDeduplication -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dquarkus.liquibase.migrate-at-start=true -Dquarkus.liquibase.validate-on-migrate=false -Dquarkus.liquibase.clear-checksums=true -Dquarkus.transaction-manager.enable-recovery=false -Dkeycloak.profile=production -Djgroups.bind_addr=127.0.0.1 -Dinfinispan.cluster.stack=local -Dquarkus.jgroups.enabled=false -Djboss.jgroups.enabled=false -Dhibernate.cache.use_second_level_cache=false"
     
     # ✅ RENDER OPTIMIZED HEALTH CHECK - Longer timeout for slow startup
-    healthCheckPath: /health/ready
+    healthCheckPath: /q/health/ready
     disk:
       name: keycloak-data
       mountPath: /opt/keycloak/data
