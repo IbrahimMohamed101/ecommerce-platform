@@ -75,7 +75,7 @@ services:
       
       # ✅ RENDER FREE TIER OPTIMIZED JVM - 50% heap for 512MB container
       - key: JAVA_OPTS_APPEND
-        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -XX:+UseG1GC -XX:+UseStringDeduplication -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dquarkus.liquibase.migrate-at-start=true -Dquarkus.liquibase.validate-on-migrate=false -Dquarkus.liquibase.clear-checksums=true -Dquarkus.transaction-manager.enable-recovery=false -Dkeycloak.profile=production -Djgroups.bind_addr=SITE_LOCAL -Dinfinispan.cluster.stack=local -Dquarkus.jgroups.enabled=false"
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -XX:+UseG1GC -XX:+UseStringDeduplication -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dquarkus.liquibase.migrate-at-start=true -Dquarkus.liquibase.validate-on-migrate=false -Dquarkus.liquibase.clear-checksums=true -Dquarkus.transaction-manager.enable-recovery=false -Dkeycloak.profile=production -Djgroups.bind_addr=127.0.0.1 -Dinfinispan.cluster.stack=local -Dquarkus.jgroups.enabled=false -Djboss.jgroups.enabled=false"
     
     # ✅ RENDER OPTIMIZED HEALTH CHECK - Longer timeout for slow startup
     healthCheckPath: /health/ready
