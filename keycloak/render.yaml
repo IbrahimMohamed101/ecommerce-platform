@@ -63,12 +63,22 @@ services:
         value: "LOCAL"
       - key: KC_CACHE_CONFIG_FILE
         value: "cache-local.xml"
-      
+
       # Additional Infinispan overrides
       - key: QUARKUS_INFINISPAN_CLIENT_DEVSERVICES_ENABLED
         value: "false"
       - key: QUARKUS_INFINISPAN_CLIENT_HOSTS
         value: "localhost:11222"
+
+      # Disable transaction recovery to speed up startup
+      - key: QUARKUS_TRANSACTION_MANAGER_ENABLE_RECOVERY
+        value: "false"
+
+      # Liquibase settings for faster startup
+      - key: QUARKUS_LIQUIBASE_MIGRATE_AT_START
+        value: "true"
+      - key: QUARKUS_LIQUIBASE_VALIDATE_ON_MIGRATE
+        value: "false"
       
       # Enhanced logging for debugging
       - key: KC_LOG_LEVEL
@@ -88,7 +98,7 @@ services:
       
       # JVM options - Enhanced for debugging and single-node operation
       - key: JAVA_OPTS_APPEND
-        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Dkeycloak.profile=production"
+        value: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=70.0 -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 -Djgroups.tcpping.initial_hosts=127.0.0.1[7800] -Djgroups.discovery.protocol=LOCAL -Dinfinispan.cluster.name=local -Dinfinispan.node.name=single-node -Dquarkus.liquibase.migrate-at-start=true -Dquarkus.liquibase.validate-on-migrate=false -Dquarkus.liquibase.clear-checksums=true -Dkeycloak.profile=production"
     
     healthCheckPath: /health/ready
     disk:
