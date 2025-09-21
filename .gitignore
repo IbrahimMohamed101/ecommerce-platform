@@ -1,0 +1,108 @@
+# ======================
+# Dependencies
+# ======================
+node_modules/
+*.tgz
+
+# ======================
+# Logs
+# ======================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======================
+# Runtime data
+# ======================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ======================
+# Coverage
+# ======================
+coverage/
+.nyc_output
+
+# ======================
+# Cache / Build Artifacts
+# ======================
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+
+# ======================
+# IDE / Editor Files
+# ======================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.vscode-test/
+
+# ======================
+# OS generated files
+# ======================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ======================
+# REPL / Misc
+# ======================
+.node_repl_history
+.npm
+*.tmp
+*.temp
+*.deb
+.yarn-integrity
+
+# ======================
+# Environment variables
+# ======================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+.env.render
+.env*
+
+# ======================
+# Sensitive / Config Files
+# ======================
+complete-realm-export.json
+ecommerce-platform-realm.json
+openapi.json
+
+# ======================
+# Internal Documentation (not for repo)
+# ======================
+init-super-admin.js
+ECOMMERCE_USER_FEATURES.md
+ENDPOINTS_DOCUMENTATION.md
+SCALABILITY_REVIEW.md
+SECURITY_DOCUMENTATION.md
+
+# ======================
+# Project folders not needed in repo
+# ======================
+docs/
+resources/
+keycloak/
+scripts/
