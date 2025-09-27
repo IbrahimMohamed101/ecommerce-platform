@@ -17,7 +17,7 @@ const auditLogger = require("./utils/auditLogger");
 const app = express();
 
 // Trust proxy for rate limiting behind reverse proxy (Render.com)
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
 // Security middleware
 app.use(helmet({
