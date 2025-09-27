@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const axios = require("axios");
 require('dotenv').config({ path: '../.env' });
 
 const transporter = nodemailer.createTransport({
@@ -10,6 +11,58 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASSWORD,
   },
 });
+
+// SendGrid API function
+async function sendWithSendGrid(to, subject, htmlContent) {
+  const sendGridUrl = 'https://api.sendgrid.com/v3/mail/send';
+  const apiKey = process.env.SENDGRID_API_KEY;
+
+  if (!apiKey || apiKey === 'your-sendgrid-api-key-here') {
+    throw new Error('SendGrid API key not configured');
+  }
+
+  const data = {
+    personalizations: [{
+      to: [{ email: to }],
+      subject: subject
+    }],
+    from: {
+      email: process.env.EMAIL_FROM,
+      name: process.env.EMAIL_FROM_NAME
+    },
+    content: [{
+      type: 'text/html',
+      value: htmlContent
+    }]
+  };
+
+  try {
+    const response = await axios.post(sendGridUrl, data, {
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('SendGrid API error:', error.response?.data || error.message);
+    throw new Error('Failed to send email via SendGrid');
+  }
+}
+
+// Helper function to send email (SendGrid preferred, fallback to nodemailer)
+async function sendEmail(to, subject, htmlContent) {
+  if (process.env.SENDGRID_API_KEY && process.env.SENDGRID_API_KEY !== 'your-sendgrid-api-key-here') {
+    return await sendWithSendGrid(to, subject, htmlContent);
+  } else {
+    return await transporter.sendMail({
+      from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
+      to,
+      subject,
+      html: htmlContent,
+    });
+  }
+}
 
 // إرسال إيميل التحقق
 async function sendVerificationEmail(to, token, username = 'User') {
@@ -103,12 +156,7 @@ async function sendVerificationEmail(to, token, username = 'User') {
     </html>
   `;
 
-  await transporter.sendMail({
-    from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
-    to,
-    subject: "Verify Your Email",
-    html: htmlContent,
-  });
+  await sendEmail(to, "Verify Your Email", htmlContent);
 
   return { message: "Verification email sent." };
 }
@@ -255,12 +303,7 @@ async function sendAdminVerificationEmail(to, token) {
     </html>
   `;
 
-  await transporter.sendMail({
-    from: '"E-commerce Store" <hemaatar636@gmail.com>',
-    to,
-    subject: "طلب التحقق من البريد الإلكتروني - إجراء مطلوب",
-    html: htmlContent,
-  });
+  await sendEmail(to, "طلب التحقق من البريد الإلكتروني - إجراء مطلوب", htmlContent);
 
   return { message: "Admin verification email sent." };
 }
@@ -358,12 +401,7 @@ async function sendPasswordResetEmail(to, token, username = 'User') {
     </html>
   `;
 
-  await transporter.sendMail({
-    from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
-    to,
-    subject: "Reset Your Password - E-commerce Store",
-    html: htmlContent,
-  });
+  await sendEmail(to, "Reset Your Password - E-commerce Store", htmlContent);
 
   return { message: "Password reset email sent." };
 }
