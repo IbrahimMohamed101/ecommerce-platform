@@ -15,11 +15,11 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5000',
+        url: 'http://localhost:8080',
         description: 'Development server',
       },
       {
-        url: 'https://ecommerce-platform-vf9m.onrender.com',
+        url: 'https://ecommerce-platform-9adz.onrender.com',
         description: 'Production server',
       },
     ],
