@@ -265,4 +265,107 @@ async function sendAdminVerificationEmail(to, token) {
   return { message: "Admin verification email sent." };
 }
 
-module.exports = { sendVerificationEmail, sendAdminVerificationEmail };
+// إرسال إيميل إعادة تعيين كلمة المرور
+async function sendPasswordResetEmail(to, token, username = 'User') {
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  const currentYear = new Date().getFullYear();
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Reset Your Password</title>
+      <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #dc3545; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 24px; }
+        .content { padding: 30px; background-color: #ffffff; border: 1px solid #e0e0e0; border-top: none; }
+        .button {
+          display: inline-block;
+          padding: 12px 30px;
+          margin: 20px 0;
+          background-color: #dc3545;
+          color: #ffffff !important;
+          text-decoration: none;
+          border-radius: 25px;
+          font-weight: 600;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .footer {
+          text-align: center;
+          padding: 20px;
+          color: #888888;
+          font-size: 12px;
+          background-color: #f9f9f9;
+          border-radius: 0 0 8px 8px;
+        }
+        .code-box {
+          background-color: #f5f5f5;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 15px 0;
+          word-break: break-all;
+          font-family: monospace;
+          color: #333;
+        }
+        .warning {
+          background-color: #fff3cd;
+          border-left: 4px solid #ffc107;
+          padding: 12px;
+          margin: 15px 0;
+          border-radius: 4px;
+        }
+      </style>
+    </head>
+    <body style="background-color: #f5f5f5; padding: 20px 0;">
+      <div class="container">
+        <div class="header">
+          <h1>Password Reset Request</h1>
+        </div>
+        <div class="content">
+          <p>Hello ${username},</p>
+          <p>We received a request to reset your password for your E-commerce Store account. If you made this request, please click the button below to reset your password:</p>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" class="button" style="color: #ffffff;">
+              Reset Password
+            </a>
+          </div>
+
+          <p>If the button doesn't work, please copy and paste the following link into your web browser:</p>
+
+          <div class="code-box">
+            ${resetUrl}
+          </div>
+
+          <div class="warning">
+            <strong>Security Notice:</strong> This password reset link will expire in 1 hour for security reasons. If you didn't request this password reset, please ignore this email - your password will remain unchanged.
+          </div>
+
+          <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+
+          <p>Best regards,<br>The E-commerce Store Team</p>
+        </div>
+        <div class="footer">
+          &copy; ${currentYear} E-commerce Store. All rights reserved.<br>
+          <small>This is an automated message, please do not reply directly to this email.</small>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM}>`,
+    to,
+    subject: "Reset Your Password - E-commerce Store",
+    html: htmlContent,
+  });
+
+  return { message: "Password reset email sent." };
+}
+
+module.exports = { sendVerificationEmail, sendAdminVerificationEmail, sendPasswordResetEmail };

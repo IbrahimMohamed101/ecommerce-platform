@@ -1,6 +1,7 @@
 const UserService = require('./user.service');
 const { catchAsync, ValidationError } = require('../../utils/errorHandler');
 const logger = require('../../utils/logger');
+const { uploadSingle } = require('../../utils/cloudinary');
 
 class UserController {
   // Get user profile with ecommerce data
@@ -270,6 +271,48 @@ class UserController {
     return res.status(200).json({
       success: true,
       message: 'Account deleted successfully'
+    });
+  });
+
+  // Upload profile image
+  static uploadProfileImage = catchAsync(async (req, res) => {
+    const user = req.user;
+
+    logger.auth('Uploading profile image', { userId: user.id });
+
+    // Check if file was uploaded
+    if (!req.file) {
+      throw new ValidationError('No image file provided');
+    }
+
+    const result = await UserService.uploadProfileImage(user.id, req.file.path);
+
+    if (!result.success) {
+      throw new ValidationError(result.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: result.message,
+      data: result.data
+    });
+  });
+
+  // Delete profile image
+  static deleteProfileImage = catchAsync(async (req, res) => {
+    const user = req.user;
+
+    logger.auth('Deleting profile image', { userId: user.id });
+
+    const result = await UserService.deleteProfileImage(user.id);
+
+    if (!result.success) {
+      throw new ValidationError(result.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: result.message
     });
   });
 }

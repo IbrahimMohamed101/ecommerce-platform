@@ -102,10 +102,15 @@ const options = {
   apis: [
     './src/modules/auth/auth.routes.js',
     './src/modules/users/user.routes.js',
-    './src/modules/vendor/vendor.routes.js',
+    './src/modules/products/product.routes.js',
+    './src/modules/categories/category.routes.js',
+    './src/modules/stores/store.routes.js',
+    './src/modules/orders/order.routes.js',
+    './src/modules/payments/payment.routes.js',
+    './src/modules/favorites/favorites.routes.js',
+    './src/modules/cart/cart.routes.js',
     './src/modules/admin/admin.routes.js',
     './src/modules/admin/super-admin.routes.js',
-    './src/modules/products/product.routes.js',
     './src/app.js',
   ],
 };

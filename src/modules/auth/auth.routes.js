@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const passport = require('passport');
 const AuthController = require('./auth.controller');
 const AuthMiddleware = require('../../middleware/auth.middleware');
 const {
@@ -430,5 +431,18 @@ router.post('/verify-email', apiLimiter, AuthController.verifyEmail);
  *         description: Too many requests
  */
 router.post('/resend-verification-email', apiLimiter, AuthController.resendVerificationEmail);
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   get:
+ *     summary: Initiate Google OAuth login
+ *     description: Redirect to Google for authentication
+ *     tags: [Authentication]
+ *     responses:
+ *       302:
+ *         description: Redirect to Google OAuth
+ */
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 module.exports = router;

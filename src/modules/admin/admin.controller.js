@@ -3,6 +3,9 @@ const UserService = require('../users/user.service');
 const VendorService = require('../vendor/vendor.service');
 const { VendorRequest, VendorProfile } = require('../vendor/vendor.model');
 const User = require('../users/user.model');
+const Store = require('../stores/store.model');
+const StoreService = require('../stores/store.service');
+const ProductService = require('../products/product.service');
 
 class AdminController {
     
@@ -103,6 +106,52 @@ class AdminController {
             approvedBy: adminUser._id
           });
           await vendorProfile.save();
+
+          // إنشاء متجر تلقائي للبائع المعتمد
+          try {
+            // Parse address string into address object
+            let addressObj = {};
+            if (vendorRequest.businessAddress) {
+              // Simple parsing: assume format "street, city, state/country"
+              const addressParts = vendorRequest.businessAddress.split(',').map(part => part.trim());
+              if (addressParts.length >= 2) {
+                addressObj = {
+                  street: addressParts[0],
+                  city: addressParts[1],
+                  state: addressParts[2] || '',
+                  country: addressParts[3] || 'Egypt' // Default to Egypt if not specified
+                };
+              } else {
+                // If parsing fails, put the whole string in street
+                addressObj = {
+                  street: vendorRequest.businessAddress,
+                  city: '',
+                  state: '',
+                  country: 'Egypt'
+                };
+              }
+            }
+
+            const storeData = {
+              name: vendorRequest.businessName || `${userResult.data.firstName} ${userResult.data.lastName}'s Store`,
+              description: vendorRequest.businessDescription || 'Welcome to my store',
+              contact: {
+                email: vendorRequest.businessEmail || userResult.data.email,
+                phone: vendorRequest.businessPhone
+              },
+              businessInfo: {
+                taxId: vendorRequest.taxNumber,
+                registrationNumber: vendorRequest.businessLicense,
+                address: addressObj
+              }
+            };
+
+            await StoreService.createStore(storeData, userId);
+            console.log(`Store created automatically for vendor ${userId}`);
+          } catch (storeError) {
+            console.error('Failed to create store for vendor:', storeError);
+            // لا نعيد الخطأ لأن الموافقة على البائع نجحت
+          }
         }
 
         // إرسال إيميل للمستخدم
@@ -290,6 +339,102 @@ class AdminController {
       });
     } catch (error) {
       console.error('Get system stats error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Get all stores (Admin only)
+  static async getAllStores(req, res) {
+    try {
+      const { page = 1, limit = 10, status } = req.query;
+
+      const query = {};
+      if (status) query.status = status;
+
+      const stores = await Store.find(query)
+        .populate('owner', 'firstName lastName email')
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(parseInt(limit))
+        .lean();
+
+      const total = await Store.countDocuments(query);
+
+      return res.status(200).json({
+        success: true,
+        data: stores,
+        pagination: {
+          page: parseInt(page),
+          limit: parseInt(limit),
+          total,
+          totalPages: Math.ceil(total / limit)
+        }
+      });
+    } catch (error) {
+      console.error('Get all stores error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Suspend or activate store (Admin only)
+  static async updateStoreStatus(req, res) {
+    try {
+      const { storeId } = req.params;
+      const { status } = req.body; // 'active' or 'suspended'
+
+      if (!['active', 'suspended'].includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid status. Must be active or suspended'
+        });
+      }
+
+      const store = await Store.findByIdAndUpdate(
+        storeId,
+        { status, updatedAt: new Date() },
+        { new: true }
+      ).populate('owner', 'firstName lastName email');
+
+      if (!store) {
+        return res.status(404).json({
+          success: false,
+          message: 'Store not found'
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Store ${status === 'suspended' ? 'suspended' : 'activated'} successfully`,
+        data: store
+      });
+    } catch (error) {
+      console.error('Update store status error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
+
+  // Delete any product (Admin only)
+  static async deleteProduct(req, res) {
+    try {
+      const { productId } = req.params;
+
+      const result = await ProductService.deleteProduct(productId, req.user.id, true);
+
+      return res.status(200).json({
+        success: true,
+        message: result.message
+      });
+    } catch (error) {
+      console.error('Delete product error:', error);
       return res.status(500).json({
         success: false,
         message: 'Internal server error'

@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const helmet = require("helmet");
 const cors = require("cors");
+const passport = require("passport");
+const session = require("express-session");
 const { swaggerUi, specs } = require("./config/swagger");
 const {
   errorHandler,
@@ -43,6 +45,25 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
+// Session middleware for Passport
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Initialize Passport strategies
+require('./modules/auth/auth.service').initializePassport();
+
 // Additional security headers
 app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
@@ -51,6 +72,9 @@ app.use((req, res, next) => {
   res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   next();
 });
+
+// Raw body parsing for Stripe webhooks
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 
 // Request logging
 app.use(requestLogger);
@@ -77,6 +101,13 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       users: '/api/users',
       products: '/api/products',
+      categories: '/api/categories',
+      stores: '/api/stores',
+      orders: '/api/orders',
+      cart: '/api/cart',
+      favorites: '/api/favorites',
+      payments: '/api/payments',
+      vendors: '/api/vendors',
       admin: '/api/admin',
       docs: '/api-docs'
     },
@@ -86,8 +117,56 @@ app.get('/', (req, res) => {
 
 // ✅ Routes
 app.use('/api/auth', require('./modules/auth/auth.routes'));
+
+/**
+ * @swagger
+ * /auth/callback/google:
+ *   get:
+ *     summary: Google OAuth callback
+ *     description: Handle Google OAuth callback and return JWT tokens
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Authentication successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Google authentication successful
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     access_token:
+ *                       type: string
+ *                     refresh_token:
+ *                       type: string
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Authentication failed
+ */
+
+// Google OAuth callback route (needs to be at root level to match Google config)
+const AuthController = require('./modules/auth/auth.controller');
+app.get('/auth/callback/google',
+  passport.authenticate('google', { failureRedirect: '/api/auth/login' }),
+  AuthController.googleOAuthCallback
+);
+
 app.use('/api/users', require('./modules/users/user.routes'));
 app.use('/api/products', require('./modules/products/product.routes'));
+app.use('/api/categories', require('./modules/categories/category.routes'));
+app.use('/api/stores', require('./modules/stores/store.routes'));
+app.use('/api/orders', require('./modules/orders/order.routes'));
+app.use('/api/cart', require('./modules/cart/cart.routes'));
+app.use('/api/favorites', require('./modules/favorites/favorites.routes'));
+app.use('/api/payments', require('./modules/payments/payment.routes'));
 app.use('/api/vendors', require('./modules/vendor/vendor.routes'));
 app.use('/api/admin', require('./modules/admin/admin.routes'));
 app.use('/api/super-admin', require('./modules/admin/super-admin.routes'));

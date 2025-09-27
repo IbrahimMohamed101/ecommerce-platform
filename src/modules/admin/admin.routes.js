@@ -312,4 +312,13 @@ router.delete('/users/:userId', AdminController.deleteUser);
 // إحصائيات النظام
 router.get('/stats', AdminController.getSystemStats);
 
+// Get all stores
+router.get('/stores', AdminController.getAllStores);
+
+// Update store status (suspend/activate)
+router.put('/stores/:storeId/status', AdminController.updateStoreStatus);
+
+// Delete any product
+router.delete('/products/:productId', AdminController.deleteProduct);
+
 module.exports = router;

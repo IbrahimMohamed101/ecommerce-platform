@@ -1,9 +1,101 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../users/user.model');
+const config = require('../../config/environment');
 const logger = require('../../utils/logger');
 
 class AuthService {
+  // Initialize Passport Google Strategy
+  static initializePassport() {
+    // Serialize user for session
+    passport.serializeUser((user, done) => {
+      done(null, user._id);
+    });
+
+    // Deserialize user from session
+    passport.deserializeUser(async (id, done) => {
+      try {
+        const user = await User.findById(id);
+        done(null, user);
+      } catch (error) {
+        done(error, null);
+      }
+    });
+
+    // Google OAuth Strategy
+    passport.use(new GoogleStrategy({
+      clientID: config.OAUTH.GOOGLE.CLIENT_ID,
+      clientSecret: config.OAUTH.GOOGLE.CLIENT_SECRET,
+      callbackURL: `${config.URLS.BACKEND}/auth/callback/google`
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        logger.auth('Google OAuth callback', { profileId: profile.id, email: profile.emails[0].value });
+
+        // Check if user already exists with this Google ID
+        let user = await User.findOne({ 'oauth.google.id': profile.id });
+
+        if (user) {
+          // Update user's Google profile info
+          user.oauth.google.accessToken = accessToken;
+          user.oauth.google.refreshToken = refreshToken;
+          user.lastLogin = new Date();
+          await user.save();
+          return done(null, user);
+        }
+
+        // Check if user exists with same email
+        user = await User.findOne({ email: profile.emails[0].value });
+
+        if (user) {
+          // Link Google account to existing user
+          user.oauth = user.oauth || {};
+          user.oauth.google = {
+            id: profile.id,
+            accessToken: accessToken,
+            refreshToken: refreshToken
+          };
+          user.lastLogin = new Date();
+          await user.save();
+          return done(null, user);
+        }
+
+        // Create new user
+        const newUser = new User({
+          email: profile.emails[0].value,
+          username: profile.emails[0].value.split('@')[0] + '_' + Math.random().toString(36).substr(2, 9),
+          firstName: profile.name.givenName,
+          lastName: profile.name.familyName,
+          role: 'Customer',
+          status: 'active',
+          emailVerified: true, // Google accounts are pre-verified
+          oauth: {
+            google: {
+              id: profile.id,
+              accessToken: accessToken,
+              refreshToken: refreshToken
+            }
+          },
+          lastLogin: new Date()
+        });
+
+        await newUser.save();
+
+        logger.auth('New user created via Google OAuth', {
+          userId: newUser._id,
+          email: newUser.email
+        });
+
+        return done(null, newUser);
+      } catch (error) {
+        logger.authError('Google OAuth error', { error: error.message });
+        return done(error, null);
+      }
+    }));
+  }
+
   // Generate JWT access token
   static generateAccessToken(user) {
     return jwt.sign(

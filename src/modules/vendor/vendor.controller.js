@@ -18,7 +18,7 @@ static async requestVendorStatus(req, res) {
         } = req.body;
 
         // التحقق من أن المستخدم Customer
-        if (!req.user.roles.includes('Customer')) {
+        if (req.user.role !== 'Customer') {
             return res.status(403).json({
             success: false,
             message: 'Only customers can request vendor status'

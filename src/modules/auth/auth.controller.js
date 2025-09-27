@@ -420,6 +420,44 @@ class AuthController {
             throw new ValidationError('Failed to send verification email. Please try again later.');
         }
     });
+
+    // Google OAuth callback
+    static googleOAuthCallback = catchAsync(async (req, res) => {
+        const user = req.user;
+
+        logger.auth('Google OAuth successful', {
+            userId: user._id,
+            email: user.email,
+            ip: req.ip
+        });
+
+        // Generate JWT tokens for the authenticated user
+        const accessToken = AuthService.generateAccessToken(user);
+        const refreshToken = AuthService.generateRefreshToken(user);
+
+        // Store refresh token in database
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        // Return tokens and user data
+        return res.status(200).json({
+            success: true,
+            message: 'Google authentication successful',
+            data: {
+                access_token: accessToken,
+                refresh_token: refreshToken,
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    username: user.username,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    role: user.role,
+                    emailVerified: user.emailVerified
+                }
+            }
+        });
+    });
 }
 
 module.exports = AuthController;

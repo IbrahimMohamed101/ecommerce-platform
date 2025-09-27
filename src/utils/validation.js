@@ -265,6 +265,71 @@ class ValidationUtils {
 
     return { email: validatedEmail };
   }
+
+  // Validate MongoDB ObjectId
+  static validateObjectId(id, fieldName = 'id') {
+    if (!id) {
+      throw new ValidationError(`${fieldName} is required`);
+    }
+
+    if (typeof id !== 'string') {
+      throw new ValidationError(`${fieldName} must be a string`);
+    }
+
+    // MongoDB ObjectId regex
+    const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+    if (!objectIdRegex.test(id)) {
+      throw new ValidationError(`Invalid ${fieldName} format`);
+    }
+
+    return id;
+  }
+
+  // Validate pagination parameters
+  static validatePagination(req) {
+    const { page, limit } = req.query;
+
+    const validatedPage = page ? parseInt(page) : 1;
+    const validatedLimit = limit ? parseInt(limit) : 20;
+
+    if (validatedPage < 1) {
+      throw new ValidationError('Page must be greater than 0');
+    }
+
+    if (validatedLimit < 1 || validatedLimit > 100) {
+      throw new ValidationError('Limit must be between 1 and 100');
+    }
+
+    return {
+      page: validatedPage,
+      limit: validatedLimit
+    };
+  }
+
+  // Validate price range
+  static validatePriceRange(req) {
+    const { minPrice, maxPrice } = req.query;
+
+    const validatedMinPrice = minPrice ? parseFloat(minPrice) : undefined;
+    const validatedMaxPrice = maxPrice ? parseFloat(maxPrice) : undefined;
+
+    if (validatedMinPrice !== undefined && validatedMinPrice < 0) {
+      throw new ValidationError('Minimum price cannot be negative');
+    }
+
+    if (validatedMaxPrice !== undefined && validatedMaxPrice < 0) {
+      throw new ValidationError('Maximum price cannot be negative');
+    }
+
+    if (validatedMinPrice !== undefined && validatedMaxPrice !== undefined && validatedMinPrice > validatedMaxPrice) {
+      throw new ValidationError('Minimum price cannot be greater than maximum price');
+    }
+
+    return {
+      minPrice: validatedMinPrice,
+      maxPrice: validatedMaxPrice
+    };
+  }
 }
 
 module.exports = ValidationUtils;

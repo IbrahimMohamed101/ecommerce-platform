@@ -17,9 +17,20 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: false, // Make password optional for OAuth users
     minlength: 8
   },
+
+  // OAuth provider information
+  oauth: {
+    google: {
+      id: String,
+      accessToken: String,
+      refreshToken: String
+    },
+    // Can be extended for other providers like Facebook, GitHub, etc.
+  },
+
   firstName: {
     type: String,
     required: true,
@@ -230,8 +241,8 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
-  // Only hash the password if it has been modified (or is new)
-  if (!this.isModified('password')) return next();
+  // Only hash the password if it has been modified (or is new) and password exists
+  if (!this.isModified('password') || !this.password) return next();
 
   try {
     // Hash password with cost of 12
@@ -250,14 +261,20 @@ userSchema.pre('save', function(next) {
 });
 
 // Index for better query performance
+userSchema.index({ email: 1 }); // For login queries
+userSchema.index({ username: 1 }); // For username lookups
+userSchema.index({ refreshToken: 1 }); // For logout operations
 userSchema.index({ role: 1 });
 userSchema.index({ status: 1 });
+userSchema.index({ emailVerified: 1 });
 userSchema.index({ 'loyaltyPoints.tier': 1 });
 userSchema.index({ 'purchaseStats.totalSpent': -1 });
 userSchema.index({ 'cart.items.productId': 1 });
 userSchema.index({ 'wishlist.productId': 1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ lastLogin: -1 });
+userSchema.index({ resetPasswordExpires: 1 }); // For password reset cleanup
+userSchema.index({ emailVerificationExpires: 1 }); // For email verification cleanup
 
 // Virtual for full name
 userSchema.virtual('fullName').get(function() {

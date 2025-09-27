@@ -7,14 +7,14 @@
     static async createAdmin(req, res) {
       try {
       const { email, password, firstName, lastName, username } = req.body;
-    
+
       if (!email || !password) {
           return res.status(400).json({
           success: false,
           message: 'Email and password are required'
           });
       }
-    
+
       // Set default values for required fields if not provided
       const adminFirstName = firstName || 'Admin';
       const adminLastName = lastName || 'User';

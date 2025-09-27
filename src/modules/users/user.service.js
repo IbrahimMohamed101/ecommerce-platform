@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const { sendVerificationEmail, sendPasswordResetEmail } = require("./email.service");
 const logger = require('../../utils/logger');
 const auditLogger = require('../../utils/auditLogger');
+const { uploadFromBuffer, deleteImage, getOptimizedUrl } = require('../../utils/cloudinary');
 
 async function registerUser({ username, email, password, firstName, lastName }) {
   try {
@@ -1144,6 +1145,90 @@ async function getAdvancedSystemStats() {
   }
 }
 
+// Profile image upload
+async function uploadProfileImage(userId, imageUrl) {
+  try {
+    logger.auth('Uploading profile image', { userId });
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+
+    // Delete existing profile image if present
+    if (user.profileImage) {
+      try {
+        const publicId = user.profileImage.split('/').pop().split('.')[0];
+        await deleteImage(`ecommerce-platform/${publicId}`);
+      } catch (deleteError) {
+        logger.warn('Failed to delete old profile image', { userId, error: deleteError.message });
+      }
+    }
+
+    // Extract public ID from Cloudinary URL
+    const publicId = imageUrl.split('/').pop().split('.')[0];
+
+    // Update user with new profile image
+    user.profileImage = imageUrl;
+    user.updatedAt = new Date();
+
+    await user.save();
+
+    logger.auth('Profile image uploaded successfully', {
+      userId,
+      profileImageUrl: user.profileImage
+    });
+
+    return {
+      success: true,
+      data: {
+        profileImage: user.profileImage,
+        publicId: publicId
+      },
+      message: 'Profile image uploaded successfully'
+    };
+  } catch (error) {
+    logger.authError('Failed to upload profile image', { userId, error: error.message });
+    return { success: false, message: 'Failed to upload profile image' };
+  }
+}
+
+// Delete profile image
+async function deleteProfileImage(userId) {
+  try {
+    logger.auth('Deleting profile image', { userId });
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+
+    if (!user.profileImage) {
+      return { success: false, message: 'User has no profile image to delete' };
+    }
+
+    // Delete from Cloudinary
+    const publicId = user.profileImage.split('/').pop().split('.')[0];
+    await deleteImage(`ecommerce-platform/${publicId}`);
+
+    // Remove profile image from user
+    user.profileImage = undefined;
+    user.updatedAt = new Date();
+
+    await user.save();
+
+    logger.auth('Profile image deleted successfully', { userId });
+
+    return {
+      success: true,
+      message: 'Profile image deleted successfully'
+    };
+  } catch (error) {
+    logger.authError('Failed to delete profile image', { userId, error: error.message });
+    return { success: false, message: 'Failed to delete profile image' };
+  }
+}
+
 module.exports = {
   registerUser,
   verifyEmail,
@@ -1170,4 +1255,6 @@ module.exports = {
   logAuditAction,
   getAuditLog,
   getAdvancedSystemStats,
+  uploadProfileImage,
+  deleteProfileImage,
 };

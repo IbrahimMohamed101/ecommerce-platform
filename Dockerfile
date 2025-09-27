@@ -1,17 +1,45 @@
-# Use the official Node.js 18 image as the base image
+# Use Node.js 18 LTS Alpine for smaller image size
 FROM node:18-alpine
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Install system dependencies for native modules
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    sqlite-dev \
+    postgresql-dev \
+    && rm -rf /var/cache/apk/*
+
+# Copy package files
 COPY package*.json ./
 
-# Install the dependencies
-RUN npm install
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# Copy source code
+COPY src/ ./src/
+COPY public/ ./public/
+COPY init-scripts/ ./init-scripts/
 
-# Command to run the application in production mode
-CMD ["npm", "run", "start"]
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Change ownership of app directory
+RUN chown -R nodejs:nodejs /app
+USER nodejs
+
+# Expose port
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:8080/health', (res) => { \
+        process.exit(res.statusCode === 200 ? 0 : 1) \
+    }).on('error', () => process.exit(1))"
+
+# Start the application
+CMD ["node", "src/server.js"]

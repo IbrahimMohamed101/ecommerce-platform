@@ -6,6 +6,7 @@ const {
   authLimiter,
   apiLimiter
 } = require("../../utils/rateLimiter");
+const { uploadSingle } = require("../../utils/cloudinary");
 
 /**
  * @swagger
@@ -759,5 +760,57 @@ router.put("/me", apiLimiter, UserController.updateProfile);
  *         description: Too many requests
  */
 router.delete("/me", apiLimiter, UserController.deleteUser);
+
+/**
+ * @swagger
+ * /api/users/profile/image:
+ *   post:
+ *     summary: Upload profile image
+ *     description: Upload a profile image for the authenticated user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Profile image file to upload
+ *     responses:
+ *       200:
+ *         description: Profile image uploaded successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       429:
+ *         description: Too many requests
+ */
+router.post("/profile/image", apiLimiter, uploadSingle, UserController.uploadProfileImage);
+
+/**
+ * @swagger
+ * /api/users/profile/image:
+ *   delete:
+ *     summary: Delete profile image
+ *     description: Delete the profile image of the authenticated user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Profile image deleted successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ *       429:
+ *         description: Too many requests
+ */
+router.delete("/profile/image", apiLimiter, UserController.deleteProfileImage);
 
 module.exports = router;

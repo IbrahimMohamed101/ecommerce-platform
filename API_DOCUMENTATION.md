@@ -27,7 +27,7 @@ Comprehensive API for E-commerce Platform with user management, vendor operation
 
 Base URLs:
 
-* <a href="http://localhost:5000">http://localhost:5000</a>
+* <a href="http://localhost:3000">http://localhost:3000</a>
 
 * <a href="https://ecommerce-platform-vf9m.onrender.com">https://ecommerce-platform-vf9m.onrender.com</a>
 
