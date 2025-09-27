@@ -8,7 +8,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8080
-      - MONGODB_URI=mongodb://mongodb:27017/ecommerce
+      - MONGODB_URI=mongodb://admin:${MONGO_ROOT_PASSWORD:-changeme123}@mongodb:27017/ecommerce?authSource=admin
       - FRONTEND_URL=http://localhost:8080
       - CORS_ORIGIN=http://localhost:3000
       - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
