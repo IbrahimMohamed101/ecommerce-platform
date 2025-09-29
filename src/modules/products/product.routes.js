@@ -6,7 +6,7 @@ const ProductController = require("./product.controller");
 const { uploadMultiple } = require("../../utils/cloudinary");
 
 /**
- * * @swagger
+ * @swagger
  * /api/products:
  *   post:
  *     summary: Create product
